@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>All About a Dog - A.G. Gardiner | Flashcards - L4</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: #f6f3ee;
+    color: #1a2332;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2.5rem 1rem 2rem;
+  }
+  .app { width: 100%; max-width: 560px; }
+  header { text-align: center; margin-bottom: 1.75rem; }
+  h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: normal;
+    font-size: 1.45rem;
+    line-height: 1.3;
+    color: #1a2332;
+    margin: 0 0 0.4rem;
+  }
+  .subtitle { font-size: 0.9rem; color: #6b7280; margin: 0; }
+
+  .progress { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+  .progress-track {
+    flex: 1;
+    height: 4px;
+    background: #e4ddd2;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0;
+    background: #2d5a7b;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+  .progress-label {
+    font-size: 0.85rem;
+    color: #6b7280;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .scene { perspective: 1200px; width: 100%; max-width: 560px; height: 320px; }
+  .card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 12px;
+    outline: none;
+  }
+  .card.flipped { transform: rotateY(180deg); }
+  .card.no-anim, .card.no-anim .face { transition: none !important; }
+  .card:focus-visible .face { box-shadow: 0 0 0 3px rgba(45,90,123,0.35), 0 2px 20px rgba(26,35,50,0.08); }
+
+  .face {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    box-shadow: 0 2px 20px rgba(26,35,50,0.08);
+    padding: 2rem 2.25rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  .front {
+    background: #ffffff;
+    border: 1px solid #d6cfc4;
+    transform: rotateY(0deg);
+  }
+  .back {
+    background: #2d5a7b;
+    color: #f0f6fa;
+    transform: rotateY(180deg);
+    visibility: hidden;
+    transition: visibility 0s 0.25s;
+  }
+  .card.flipped .back { visibility: visible; }
+  .card.flipped .front { visibility: hidden; transition: visibility 0s 0.25s; }
+
+  .label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #8a8275;
+    flex-shrink: 0;
+  }
+  .back .label { color: rgba(240,246,250,0.65); }
+  .text {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin: auto 0;
+    padding: 1rem 0;
+    white-space: pre-line;
+    overflow-wrap: break-word;
+  }
+  .hint {
+    font-size: 0.8rem;
+    color: #8a8275;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+  button {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.92rem;
+    border-radius: 8px;
+    padding: 0.65rem 1.25rem;
+    cursor: pointer;
+    transition: background 0.2s ease, opacity 0.2s ease;
+  }
+  button:focus-visible { outline: 3px solid rgba(45,90,123,0.35); outline-offset: 2px; }
+  .nav-btn {
+    background: #2d5a7b;
+    color: #ffffff;
+    border: 1px solid #2d5a7b;
+    min-width: 6.5rem;
+  }
+  .nav-btn:hover:not(:disabled) { background: #244a66; }
+  .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .shuffle-btn {
+    background: transparent;
+    color: #2d5a7b;
+    border: 1.5px dashed #2d5a7b;
+  }
+  .shuffle-btn:hover { background: rgba(45,90,123,0.06); }
+
+  .kbd-hint {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #8a8275;
+    margin-top: 1.25rem;
+  }
+  kbd {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.75rem;
+    background: #ffffff;
+    border: 1px solid #d6cfc4;
+    border-radius: 4px;
+    padding: 0.1rem 0.4rem;
+  }
+
+  @media (max-width: 480px) {
+    body { padding: 1.75rem 0.85rem 1.5rem; }
+    h1 { font-size: 1.25rem; }
+    .scene { height: 290px; }
+    .face { padding: 1.5rem 1.25rem; }
+    .text { font-size: 1rem; }
+    .kbd-hint { display: none; }
+    .nav-btn { min-width: 5.5rem; padding: 0.65rem 1rem; }
+    .shuffle-btn { padding: 0.65rem 0.9rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card, .progress-fill { transition: none; }
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <header>
+    <h1>All About a Dog - A.G. Gardiner | Flashcards - L4</h1>
+    <p class="subtitle">A.G. Gardiner · 48 Flashcards</p>
+  </header>
+
+  <div class="progress" aria-hidden="true">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <span class="progress-label" id="progressLabel">1 / 1</span>
+  </div>
+
+  <div class="scene">
+    <div class="card" id="card" role="button" tabindex="0" aria-live="polite" aria-label="Flashcard. Activate to flip.">
+      <div class="face front">
+        <div class="label">Question</div>
+        <div class="text" id="qText"></div>
+        <div class="hint">Tap to reveal answer</div>
+      </div>
+      <div class="face back">
+        <div class="label">Answer</div>
+        <div class="text" id="aText"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="nav-btn" id="prevBtn" type="button">&larr; Prev</button>
+    <button class="shuffle-btn" id="shuffleBtn" type="button">Shuffle</button>
+    <button class="nav-btn" id="nextBtn" type="button">Next &rarr;</button>
+  </div>
+
+  <div class="kbd-hint"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> to navigate &nbsp;&middot;&nbsp; <kbd>Space</kbd> to flip</div>
+</main>
+
+<script>
+const DATA = [
+[
+"At Bloom's Level 4 (Analyse), what primary purpose do characters serve in Gardiner's essay?",
+"They serve as vehicles for social commentary to critique recognisable patterns of behaviour."
+],
+[
+"Which social archetype does the conductor represent in 'All About a Dog'?",
+"He represents the petty bureaucrat who exercises small institutional authority with disproportionate severity."
+],
+[
+"According to Gardiner's reference to H.G. Wells, what is the root cause of the conductor's resentment?",
+"It is a product of systemic class inequality and dehumanising institutional roles rather than personal malice."
+],
+[
+"Which detail in the essay establishes the Sealskin Lady's social wealth?",
+"Her fur coat signals her wealth and higher social standing."
+],
+[
+"How does the Sealskin Lady attempt to use her social capital when confronted by the conductor?",
+"She immediately demands that the conductor take her name and address."
+],
+[
+"What causes the Sealskin Lady's initial confidence to collapse during the confrontation?",
+"Her confidence collapses under the sustained pressure of institutional authority."
+],
+[
+"What constitutes Gardiner's sharpest social critique regarding the bus passengers?",
+"The gap between their loud public morality and their complete lack of private courage."
+],
+[
+"How does the young man on the bus illustrate the gap between spoken principle and actual commitment?",
+"He loudly promises to stay all night in protest but quietly slips away soon after."
+],
+[
+"How is the narrator characterized in contrast to the other passengers on the bus?",
+"He is depicted as a detached, reasoning observer who refrains from dramatic class performances."
+],
+[
+"What contrast does Gardiner draw to distinguish performed courage from actual principle?",
+"He contrasts the young man who promised to stay with the narrator who said little but actually stayed."
+],
+[
+"What does the narrator's quiet success demonstrate about institutional authority?",
+"Institutional authority can silence angry crowds, but it cannot silence a quiet, reasonable individual."
+],
+[
+"What is the rhetorical purpose of Gardiner's 'delayed thesis' strategy in the essay?",
+"It presents the conflict in full detail first so the reader is persuaded before the explicit argument is spoken."
+],
+[
+"In the classical argument structure of the narrator's speech, what is the first step?",
+"The narrator begins by acknowledging the opponent's position."
+],
+[
+"In the classical argument structure of the narrator's speech, what step immediately follows qualifying the opponent's position?",
+"Providing a clear distinction between different types of rules."
+],
+[
+"What is the final step in the classical argument form used by the narrator?",
+"Offering a constructive recommendation to resolve the situation."
+],
+[
+"How does the word 'scourge' alter the reader's perception of the bus conductor?",
+"It briefly transforms the rule into an instrument of cruelty and the conductor into an oppressor."
+],
+[
+"Where is the word 'scourge' strategically placed within the narrator's speech?",
+"It is placed at the climax of the argument to make the moral stakes suddenly sharp."
+],
+[
+"What specific reaction from the conductor at the end of the essay proves that patient reasoning works?",
+"The conductor bids the narrator 'Good night quite amiably'."
+],
+[
+"How does the structure of the essay itself embody its central thesis on rules and common sense?",
+"The narrative structure demonstrates that quiet, patient engagement produces successful persuasive results."
+],
+[
+"What is the irony regarding the form Gardiner uses to persuade his readers?",
+"He persuades the reader using the same quiet, reasoned engagement that the narrator advocates."
+],
+[
+"How does bathos operate in the conductor's self-comparison to a military captain?",
+"His grand military self-image is deflated by the trivial reality of pacing a cold pavement over a toy dog."
+],
+[
+"Term: Bathos",
+"Definition: A deliberate literary descent from the grand to the trivial used for comic or analytical effect."
+],
+[
+"How does light humour function as a rhetorical strategy in Gardiner's essay?",
+"It keeps the reader engaged and non-defensive, making them more receptive to serious moral arguments."
+],
+[
+"How many times does the dog explicitly appear during the essay's central confrontation?",
+"The dog appears six times throughout the narrative."
+],
+[
+"What is the dog doing each time Gardiner cuts back to it during dramatic peaks?",
+"The dog is sitting serene and blinking calmly."
+],
+[
+"What structural function does the recurring image of the calm dog perform during arguments?",
+"It creates a comic rhythm that deflates dramatic tension whenever human conflict peaks."
+],
+[
+"How does the dog's serene behaviour reinforce Gardiner's analytical argument?",
+"It underlines the sheer absurdity of treating a tiny, indifferent animal as a genuine institutional threat."
+],
+[
+"Which literary technique is used in phrases like 'Captain on the quarterdeck' and 'hour of victory'?",
+"Mock-heroic language."
+],
+[
+"What gap does Gardiner highlight by applying mock-heroic language to the conductor?",
+"The ironic gap between the conductor's grand self-image and the pettiness of his actual situation."
+],
+[
+"Why does Gardiner present the conductor as a figure of pathos as well as comedy?",
+"Because the conductor's need for power has reduced him to counting petty victories on a cold bus."
+],
+[
+"How does the essay's light tone serve as an argument against the conductor's behaviour?",
+"By refusing to treat the conflict with heavy gravity, it signals that the conductor's seriousness is misplaced."
+],
+[
+"What practical outcome occurs when authority is exercised completely without empathy?",
+"It creates resistance and chaos, leaving the bus unable to complete its route."
+],
+[
+"Why is empathy from the passengers alone insufficient to resolve the bus conflict?",
+"Because strong feeling cannot override institutional rules without the structural power to act."
+],
+[
+"According to Gardiner, how must rules be applied for authority to function effectively?",
+"Rules must be guided and exercised with empathetic consideration for the people they serve."
+],
+[
+"What underlying social norm is asserted by the passengers' initial outrage?",
+"The expectation that a public servant exists to serve the public rather than obstruct them."
+],
+[
+"Why does Gardiner view social norms as fragile constructs?",
+"Because they depend on individuals actively choosing empathy and service over self-interest and power."
+],
+[
+"What is Gardiner's implied thesis regarding what holds a functional society together?",
+"Society functions when authority figures actively choose to exercise power with care for others."
+],
+[
+"What occurs to a social system when authority, empathy, or social responsibility is absent?",
+"The remaining elements cannot compensate for the missing piece, causing the system to fracture."
+],
+[
+"What does the quiet resolution between the narrator and conductor imply about moral choices?",
+"Empathetic and reasoned choices must be actively made by individuals and do not happen automatically."
+],
+[
+"The conductor's resentment is portrayed not as personal malice, but as a product of _____ inequality.",
+"class"
+],
+[
+"The rhetoric of the narrator warns that rules are not a whip put in hand to _____ passengers.",
+"scourge"
+],
+[
+"Gardiner deflates grand expectations to trivial reality using the comic technique of _____.",
+"bathos"
+],
+[
+"Phrases like 'hour of victory' and 'real holiday' are examples of _____ language.",
+"mock-heroic"
+],
+[
+"In Gardiner's framework, authority exercised without _____ results in chaos rather than compliance.",
+"empathy"
+],
+[
+"Why does Gardiner use recognizable character types rather than deeply individualized figures?",
+"To construct a broader social argument using recognizable patterns of behaviour in the face of authority."
+],
+[
+"How does the narrator's approach differ from the passengers' collective protest?",
+"The narrator relies on calm, reasoned individual engagement rather than loud, empty collective outrage."
+],
+[
+"What primary advantage does the light essay form give Gardiner when addressing moral topics?",
+"It allows him to present a serious moral argument without resorting to off-putting lecturing."
+],
+[
+"What balance of three factors is required for society to function properly according to Chunk C-06-L4?",
+"Authority, empathy, and social responsibility must be held in balance."
+]
+];
+
+(function () {
+  let order = DATA.map((_, i) => i);
+  let idx = 0;
+
+  const card = document.getElementById('card');
+  const qText = document.getElementById('qText');
+  const aText = document.getElementById('aText');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const shuffleBtn = document.getElementById('shuffleBtn');
+  const fill = document.getElementById('progressFill');
+  const label = document.getElementById('progressLabel');
+  const faces = card.querySelectorAll('.face');
+
+  function render() {
+    // Reset to the question side instantly so the next answer is never revealed mid-flip
+    card.classList.add('no-anim');
+    card.classList.remove('flipped');
+    const pair = DATA[order[idx]];
+    qText.textContent = pair[0];
+    aText.textContent = pair[1];
+    faces.forEach(f => { f.scrollTop = 0; });
+    void card.offsetWidth;
+    card.classList.remove('no-anim');
+
+    const total = DATA.length;
+    label.textContent = (idx + 1) + ' / ' + total;
+    fill.style.width = ((idx + 1) / total * 100) + '%';
+    prevBtn.disabled = idx === 0;
+    nextBtn.disabled = idx === total - 1;
+  }
+
+  function flip() { card.classList.toggle('flipped'); }
+  function prev() { if (idx > 0) { idx--; render(); } }
+  function next() { if (idx < DATA.length - 1) { idx++; render(); } }
+  function shuffle() {
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    idx = 0;
+    render();
+  }
+
+  card.addEventListener('click', flip);
+  prevBtn.addEventListener('click', function () { prev(); this.blur(); });
+  nextBtn.addEventListener('click', function () { next(); this.blur(); });
+  shuffleBtn.addEventListener('click', function () { shuffle(); this.blur(); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
+    else if (e.key === ' ' || e.code === 'Space') { e.preventDefault(); flip(); }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

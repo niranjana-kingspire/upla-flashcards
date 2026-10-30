@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>All About a Dog - A.G. Gardiner | Flashcards - L5</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: #f6f3ee;
+    color: #1a2332;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2.5rem 1rem 2rem;
+  }
+  .app { width: 100%; max-width: 560px; }
+  header { text-align: center; margin-bottom: 1.75rem; }
+  h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: normal;
+    font-size: 1.45rem;
+    line-height: 1.3;
+    color: #1a2332;
+    margin: 0 0 0.4rem;
+  }
+  .subtitle { font-size: 0.9rem; color: #6b7280; margin: 0; }
+
+  .progress { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+  .progress-track {
+    flex: 1;
+    height: 4px;
+    background: #e4ddd2;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0;
+    background: #2d5a7b;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+  .progress-label {
+    font-size: 0.85rem;
+    color: #6b7280;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .scene { perspective: 1200px; width: 100%; max-width: 560px; height: 320px; }
+  .card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 12px;
+    outline: none;
+  }
+  .card.flipped { transform: rotateY(180deg); }
+  .card.no-anim, .card.no-anim .face { transition: none !important; }
+  .card:focus-visible .face { box-shadow: 0 0 0 3px rgba(45,90,123,0.35), 0 2px 20px rgba(26,35,50,0.08); }
+
+  .face {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    box-shadow: 0 2px 20px rgba(26,35,50,0.08);
+    padding: 2rem 2.25rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  .front {
+    background: #ffffff;
+    border: 1px solid #d6cfc4;
+    transform: rotateY(0deg);
+  }
+  .back {
+    background: #2d5a7b;
+    color: #f0f6fa;
+    transform: rotateY(180deg);
+    visibility: hidden;
+    transition: visibility 0s 0.25s;
+  }
+  .card.flipped .back { visibility: visible; }
+  .card.flipped .front { visibility: hidden; transition: visibility 0s 0.25s; }
+
+  .label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #8a8275;
+    flex-shrink: 0;
+  }
+  .back .label { color: rgba(240,246,250,0.65); }
+  .text {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin: auto 0;
+    padding: 1rem 0;
+    white-space: pre-line;
+    overflow-wrap: break-word;
+  }
+  .hint {
+    font-size: 0.8rem;
+    color: #8a8275;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+  button {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.92rem;
+    border-radius: 8px;
+    padding: 0.65rem 1.25rem;
+    cursor: pointer;
+    transition: background 0.2s ease, opacity 0.2s ease;
+  }
+  button:focus-visible { outline: 3px solid rgba(45,90,123,0.35); outline-offset: 2px; }
+  .nav-btn {
+    background: #2d5a7b;
+    color: #ffffff;
+    border: 1px solid #2d5a7b;
+    min-width: 6.5rem;
+  }
+  .nav-btn:hover:not(:disabled) { background: #244a66; }
+  .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .shuffle-btn {
+    background: transparent;
+    color: #2d5a7b;
+    border: 1.5px dashed #2d5a7b;
+  }
+  .shuffle-btn:hover { background: rgba(45,90,123,0.06); }
+
+  .kbd-hint {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #8a8275;
+    margin-top: 1.25rem;
+  }
+  kbd {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.75rem;
+    background: #ffffff;
+    border: 1px solid #d6cfc4;
+    border-radius: 4px;
+    padding: 0.1rem 0.4rem;
+  }
+
+  @media (max-width: 480px) {
+    body { padding: 1.75rem 0.85rem 1.5rem; }
+    h1 { font-size: 1.25rem; }
+    .scene { height: 290px; }
+    .face { padding: 1.5rem 1.25rem; }
+    .text { font-size: 1rem; }
+    .kbd-hint { display: none; }
+    .nav-btn { min-width: 5.5rem; padding: 0.65rem 1rem; }
+    .shuffle-btn { padding: 0.65rem 0.9rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card, .progress-fill { transition: none; }
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <header>
+    <h1>All About a Dog - A.G. Gardiner | Flashcards - L5</h1>
+    <p class="subtitle">A.G. Gardiner · 52 Flashcards</p>
+  </header>
+
+  <div class="progress" aria-hidden="true">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <span class="progress-label" id="progressLabel">1 / 1</span>
+  </div>
+
+  <div class="scene">
+    <div class="card" id="card" role="button" tabindex="0" aria-live="polite" aria-label="Flashcard. Activate to flip.">
+      <div class="face front">
+        <div class="label">Question</div>
+        <div class="text" id="qText"></div>
+        <div class="hint">Tap to reveal answer</div>
+      </div>
+      <div class="face back">
+        <div class="label">Answer</div>
+        <div class="text" id="aText"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="nav-btn" id="prevBtn" type="button">&larr; Prev</button>
+    <button class="shuffle-btn" id="shuffleBtn" type="button">Shuffle</button>
+    <button class="nav-btn" id="nextBtn" type="button">Next &rarr;</button>
+  </div>
+
+  <div class="kbd-hint"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> to navigate &nbsp;&middot;&nbsp; <kbd>Space</kbd> to flip</div>
+</main>
+
+<script>
+const DATA = [
+[
+"At Bloom's Taxonomy Level 5 (Evaluate), what is the key skill required when assessing A.G. Gardiner's argument on rules?",
+"Critically evaluating the strengths and limitations of the argument to form and justify a reasoned position."
+],
+[
+"What was the primary negative consequence of the bus conductor's rigid rule enforcement in 'All About a Dog'?",
+"It caused delays, exposed passengers to cold weather, and eroded public trust."
+],
+[
+"According to the evaluation of Gardiner's essay, what primary function are rules designed to perform?",
+"Rules exist to serve the needs and well-being of people."
+],
+[
+"What indicates that an institutional rule is failing to function properly during enforcement?",
+"Enforcement causes greater harm to people than the alleged violation itself."
+],
+[
+"How does modern legal reasoning apply Gardiner's concept of the 'spirit' of a rule?",
+"Courts seek to determine what the legislature intended rather than strictly adhering to literal wording."
+],
+[
+"In legal and ethical analysis, how is the 'letter' of a rule distinguished from its 'spirit'?",
+"The letter refers to literal phrasing, whereas the spirit refers to the underlying intent and purpose."
+],
+[
+"What administrative risk arises if front-line workers independently choose which rules to ignore or enforce?",
+"Enforcement becomes inconsistent and prone to individual favouritism."
+],
+[
+"What is the main rationale for requiring uniform enforcement of rules in public institutions?",
+"It maintains fairness and prevents arbitrary decision-making by individual employees."
+],
+[
+"What key assumption does Gardiner make regarding the capacity of front-line rule enforcers?",
+"He assumes employees possess and should exercise sound moral judgement."
+],
+[
+"Why might front-line workers be unable to exercise human compassion when enforcing rules?",
+"Institutional pressure often deliberately strips front-line staff of discretionary authority."
+],
+[
+"What counter-argument is raised regarding the bus conductor's true motivation for rule enforcement?",
+"His motivation may have stemmed from personal resentment rather than professional duty."
+],
+[
+"How could a conductor driven by kindness enforce a strict rule differently than one driven by resentment?",
+"They could apply the same rule with empathy and reasonable human flexibility."
+],
+[
+"What does the counter-argument regarding the conductor's character suggest about rule failure?",
+"It suggests the problem lies in individual character rather than rule design."
+],
+[
+"What is the systemic response to avoiding reliance on individual moral judgement in rule enforcement?",
+"Designing rules that incorporate flexibility and human consideration from the outset."
+],
+[
+"How does systemic rule design alter the reliance on individual front-line workers?",
+"It reduces the need to rely on the uncertain moral judgement of individual enforcers."
+],
+[
+"Why is Gardiner's essay considered incomplete as a general theory of rule flexibility?",
+"It fails to explain how flexibility can be fairly governed and regulated."
+],
+[
+"What core question about rule flexibility does Gardiner raise without fully answering?",
+"Who should hold the power to bend rules and how that power should be constrained."
+],
+[
+"What is the overall verdict on the main strength of Gardiner's essay?",
+"It is most persuasive as a call for empathy in positions of authority."
+],
+[
+"A thorough Level 5 evaluation tests an argument's strengths while exposing its underlying _____.",
+"assumptions"
+],
+[
+"Gardiner's argument for rule flexibility depends fundamentally on trusting the _____ of rule enforcers.",
+"judgement"
+],
+[
+"Why is Gardiner's communication of the theme of authority considered effective?",
+"It provides a clear, observable demonstration of authority causing harm without empathy."
+],
+[
+"How does Gardiner convey the theme of empathy effectively to the reader?",
+"He demonstrates empathy through practical outcomes rather than preaching abstract ideals."
+],
+[
+"Which event in the narrative confirms that the narrator's empathetic conduct was successful?",
+"The conductor parting with a friendly 'Good night quite amiably'."
+],
+[
+"How does Gardiner depict social norms and solidarity in 'All About a Dog'?",
+"He presents them wryly and honestly, acknowledging when social solidarity fails."
+],
+[
+"Why is Gardiner's observation of social norms considered credible by evaluators?",
+"He avoids idealising human behaviour and offers realistic observations over moral lectures."
+],
+[
+"In what year was A.G. Gardiner's essay 'All About a Dog' published?",
+"1914"
+],
+[
+"What geopolitical context is reflected when passengers compare the conductor to 'a German'?",
+"The onset of World War I and global debates over rigid authority versus human judgement."
+],
+[
+"In what way functions 'All About a Dog' as a quiet political statement?",
+"It mirrors macro-level societal conflicts over authority and empathy within an everyday setting."
+],
+[
+"What is a key structural limitation in Gardiner's resolution to institutional conflict?",
+"It relies on improving individual enforcers rather than reforming institutional design."
+],
+[
+"Why does Gardiner's essay maintain contemporary relevance in ethical and legal studies?",
+"The tension between institutional authority and human compassion remains unresolved."
+],
+[
+"What constitutes the enduring value of Gardiner's essay across different eras?",
+"Its elegant demonstration that conflicts between authority and empathy occur at every level of society."
+],
+[
+"Concept: Letter of the Law",
+"Definition: The strict and literal interpretation of a rule regardless of its intent."
+],
+[
+"Concept: Spirit of the Law",
+"Definition: The underlying intention, purpose, and human rationale behind a rule."
+],
+[
+"Gardiner argues that authority exercised without empathy inevitably causes harm to the _____.",
+"public"
+],
+[
+"Institutional pressures on front-line employees often deliberately eliminate personal _____.",
+"discretion"
+],
+[
+"An alternative critique posits that the conductor's failure stemmed from personal _____ rather than rule design.",
+"resentment"
+],
+[
+"Systemic solutions focus on building better _____ rather than relying on better individuals.",
+"rules"
+],
+[
+"Gardiner's model lacks a framework showing how rule flexibility can be fairly _____.",
+"governed"
+],
+[
+"The insult 'no better than a German' links the narrative to the historical context of _____.",
+"1914"
+],
+[
+"Gardiner avoids moral lecturing by showing empathy's value through concrete _____.",
+"demonstration"
+],
+[
+"Uniform enforcement is maintained in organizations to prevent bias and _____.",
+"favouritism"
+],
+[
+"Rigid enforcement erodes public trust when rules are stripped of _____.",
+"common sense"
+],
+[
+"What vulnerability exists when rule flexibility relies entirely on individual moral choice?",
+"It creates inconsistency across different enforcers and situations."
+],
+[
+"How does 'All About a Dog' connect a minor domestic incident to global societal conflicts?",
+"By illustrating how rigid rule compliance mirrors systemic authoritarianism."
+],
+[
+"What distinguishes Bloom's L5 (Evaluate) from L4 analysis when studying texts?",
+"L5 requires forming judgements on an argument's validity, limitations, and underlying assumptions."
+],
+[
+"Why do systemic reformers critique Gardiner's faith in individual front-line discretion?",
+"Individual discretion leaves rule application vulnerable to personal bias and character flaws."
+],
+[
+"What primary lesson does Gardiner's essay offer to individuals holding authority?",
+"Authority must be tempered with empathy and common sense to effectively serve the public."
+],
+[
+"How does institutional design minimize the friction seen in Gardiner's bus scenario?",
+"By embedding explicit guidelines for exceptions directly into standard operating procedures."
+],
+[
+"What outcome demonstrated that the narrator's polite empathy influenced the conductor?",
+"The conductor shifted from hostility to an amiable farewell."
+],
+[
+"Why is relying strictly on individual character improvement insufficient for institutional fairness?",
+"Institutional rules and pressures constrain worker behaviour regardless of personal intent."
+],
+[
+"What happens to passenger solidarity when authority is enforced without common sense?",
+"Social cohesion breaks down, leading to anger, conflict, and vocal resistance."
+],
+[
+"How do modern legal systems balance the letter and spirit of statutory law?",
+"By analyzing legislative intent to resolve ambiguities in literal text."
+]
+];
+
+(function () {
+  let order = DATA.map((_, i) => i);
+  let idx = 0;
+
+  const card = document.getElementById('card');
+  const qText = document.getElementById('qText');
+  const aText = document.getElementById('aText');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const shuffleBtn = document.getElementById('shuffleBtn');
+  const fill = document.getElementById('progressFill');
+  const label = document.getElementById('progressLabel');
+  const faces = card.querySelectorAll('.face');
+
+  function render() {
+    // Reset to the question side instantly so the next answer is never revealed mid-flip
+    card.classList.add('no-anim');
+    card.classList.remove('flipped');
+    const pair = DATA[order[idx]];
+    qText.textContent = pair[0];
+    aText.textContent = pair[1];
+    faces.forEach(f => { f.scrollTop = 0; });
+    void card.offsetWidth;
+    card.classList.remove('no-anim');
+
+    const total = DATA.length;
+    label.textContent = (idx + 1) + ' / ' + total;
+    fill.style.width = ((idx + 1) / total * 100) + '%';
+    prevBtn.disabled = idx === 0;
+    nextBtn.disabled = idx === total - 1;
+  }
+
+  function flip() { card.classList.toggle('flipped'); }
+  function prev() { if (idx > 0) { idx--; render(); } }
+  function next() { if (idx < DATA.length - 1) { idx++; render(); } }
+  function shuffle() {
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    idx = 0;
+    render();
+  }
+
+  card.addEventListener('click', flip);
+  prevBtn.addEventListener('click', function () { prev(); this.blur(); });
+  nextBtn.addEventListener('click', function () { next(); this.blur(); });
+  shuffleBtn.addEventListener('click', function () { shuffle(); this.blur(); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
+    else if (e.key === ' ' || e.code === 'Space') { e.preventDefault(); flip(); }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
