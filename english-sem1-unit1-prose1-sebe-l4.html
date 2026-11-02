@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spoken English &amp; Broken English - G.B. Shaw | Flashcards - L4</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: #f6f3ee;
+    color: #1a2332;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2.5rem 1rem 2rem;
+  }
+  .app { width: 100%; max-width: 560px; }
+  header { text-align: center; margin-bottom: 1.75rem; }
+  h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: normal;
+    font-size: 1.45rem;
+    line-height: 1.3;
+    color: #1a2332;
+    margin: 0 0 0.4rem;
+  }
+  .subtitle { font-size: 0.9rem; color: #6b7280; margin: 0; }
+
+  .progress { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+  .progress-track {
+    flex: 1;
+    height: 4px;
+    background: #e4ddd2;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0;
+    background: #2d5a7b;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+  .progress-label {
+    font-size: 0.85rem;
+    color: #6b7280;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .scene { perspective: 1200px; width: 100%; max-width: 560px; height: 320px; }
+  .card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 12px;
+    outline: none;
+  }
+  .card.flipped { transform: rotateY(180deg); }
+  .card.no-anim, .card.no-anim .face { transition: none !important; }
+  .card:focus-visible .face { box-shadow: 0 0 0 3px rgba(45,90,123,0.35), 0 2px 20px rgba(26,35,50,0.08); }
+
+  .face {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    box-shadow: 0 2px 20px rgba(26,35,50,0.08);
+    padding: 2rem 2.25rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  .front {
+    background: #ffffff;
+    border: 1px solid #d6cfc4;
+    transform: rotateY(0deg);
+  }
+  .back {
+    background: #2d5a7b;
+    color: #f0f6fa;
+    transform: rotateY(180deg);
+    visibility: hidden;
+    transition: visibility 0s 0.25s;
+  }
+  .card.flipped .back { visibility: visible; }
+  .card.flipped .front { visibility: hidden; transition: visibility 0s 0.25s; }
+
+  .label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #8a8275;
+    flex-shrink: 0;
+  }
+  .back .label { color: rgba(240,246,250,0.65); }
+  .text {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin: auto 0;
+    padding: 1rem 0;
+    white-space: pre-line;
+    overflow-wrap: break-word;
+  }
+  .hint {
+    font-size: 0.8rem;
+    color: #8a8275;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+  button {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.92rem;
+    border-radius: 8px;
+    padding: 0.65rem 1.25rem;
+    cursor: pointer;
+    transition: background 0.2s ease, opacity 0.2s ease;
+  }
+  button:focus-visible { outline: 3px solid rgba(45,90,123,0.35); outline-offset: 2px; }
+  .nav-btn {
+    background: #2d5a7b;
+    color: #ffffff;
+    border: 1px solid #2d5a7b;
+    min-width: 6.5rem;
+  }
+  .nav-btn:hover:not(:disabled) { background: #244a66; }
+  .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .shuffle-btn {
+    background: transparent;
+    color: #2d5a7b;
+    border: 1.5px dashed #2d5a7b;
+  }
+  .shuffle-btn:hover { background: rgba(45,90,123,0.06); }
+
+  .kbd-hint {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #8a8275;
+    margin-top: 1.25rem;
+  }
+  kbd {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.75rem;
+    background: #ffffff;
+    border: 1px solid #d6cfc4;
+    border-radius: 4px;
+    padding: 0.1rem 0.4rem;
+  }
+
+  @media (max-width: 480px) {
+    body { padding: 1.75rem 0.85rem 1.5rem; }
+    h1 { font-size: 1.25rem; }
+    .scene { height: 290px; }
+    .face { padding: 1.5rem 1.25rem; }
+    .text { font-size: 1rem; }
+    .kbd-hint { display: none; }
+    .nav-btn { min-width: 5.5rem; padding: 0.65rem 1rem; }
+    .shuffle-btn { padding: 0.65rem 0.9rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card, .progress-fill { transition: none; }
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <header>
+    <h1>Spoken English &amp; Broken English - G.B. Shaw | Flashcards - L4</h1>
+    <p class="subtitle">G.B. Shaw · 50 Flashcards</p>
+  </header>
+
+  <div class="progress" aria-hidden="true">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <span class="progress-label" id="progressLabel">1 / 1</span>
+  </div>
+
+  <div class="scene">
+    <div class="card" id="card" role="button" tabindex="0" aria-live="polite" aria-label="Flashcard. Activate to flip.">
+      <div class="face front">
+        <div class="label">Question</div>
+        <div class="text" id="qText"></div>
+        <div class="hint">Tap to reveal answer</div>
+      </div>
+      <div class="face back">
+        <div class="label">Answer</div>
+        <div class="text" id="aText"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="nav-btn" id="prevBtn" type="button">&larr; Prev</button>
+    <button class="shuffle-btn" id="shuffleBtn" type="button">Shuffle</button>
+    <button class="nav-btn" id="nextBtn" type="button">Next &rarr;</button>
+  </div>
+
+  <div class="kbd-hint"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> to navigate &nbsp;&middot;&nbsp; <kbd>Space</kbd> to flip</div>
+</main>
+
+<script>
+const DATA = [
+[
+"What institutional authority does Shaw cite to demonstrate that even experts cannot agree on 'correct' English?",
+"He cites the BBC committee on spoken English."
+],
+[
+"Why does Shaw establish the BBC committee's authority before revealing their internal disagreement?",
+"It pre-empts objections by demonstrating that if top experts cannot agree on correctness, no single standard exists."
+],
+[
+"Which two distinguished members of the BBC committee are mentioned by Shaw to highlight divergent speech styles?",
+"The Poet Laureate and Forbes-Robertson."
+],
+[
+"How does Shaw's assertion that 'there is no correct English' challenge existing social hierarchies?",
+"It dismantles class and national hierarchies by denying that any single group owns the language."
+],
+[
+"What term does Shaw substitute for 'correct English' to establish a functional linguistic standard?",
+"Presentable English."
+],
+[
+"Shaw distinguishes 'presentable' English from which negative speech category?",
+"Ignorant and illiterate speech."
+],
+[
+"What is the primary purpose of aiming for 'cultivated' speech according to Shaw's binary contrast?",
+"To avoid stigmatisation as uneducated rather than to perform class belonging."
+],
+[
+"How does naming real, famous figures on the BBC committee strengthen Shaw's rhetorical argument?",
+"It makes the diversity of spoken English concrete rather than abstract."
+],
+[
+"According to Shaw, what is the quiet democratic argument behind replacing correctness with presentability?",
+"It dismantles the fiction that a single correct form of English is owned by one class or nation."
+],
+[
+"Shaw's position on speech standards is described as progressive within limits because he maintains _____ as a necessary standard.",
+"presentability"
+],
+[
+"What personal disclosure does Shaw make to illustrate the concept of 'home manners'?",
+"He refers to his own speech habits within his marriage."
+],
+[
+"How does Shaw's disclosure of his domestic speech habits humanise his public persona?",
+"It shows that register variation affects even world-famous public intellectuals."
+],
+[
+"What structural transition does the 'company versus home manners' section perform in Shaw's speech?",
+"It moves the argument from 'there is no correct English' to 'individual speakers lack a single consistent English'."
+],
+[
+"Why does Shaw deliberately use hyperbole when suggesting his wife would think he was 'going mad'?",
+"To show that using formal public-speech precision in a domestic context is socially inappropriate."
+],
+[
+"What is the social effect of applying public-speech precision in a domestic setting?",
+"It results in social oddity rather than effective communication."
+],
+[
+"What rhetorical device does Shaw use when inviting listeners to 'overhear' domestic speech?",
+"The keyhole device."
+],
+[
+"How does the keyhole device serve Shaw's argument on register variation?",
+"It makes the abstract concept of register variation vivid and concrete."
+],
+[
+"Why is evaluating a language learner solely through formal registers considered incomplete?",
+"It fails to assess their communicative competence across informal and domestic contexts."
+],
+[
+"The compressed domestic phrase 'Clock's it' is an example of context-dependent English rather than _____.",
+"broken English"
+],
+[
+"What does the phrase 'Clock's it' demonstrate about domestic communication?",
+"It demonstrates that highly compressed, context-dependent language can be perfectly functional within its register."
+],
+[
+"What central idea about individual speech is dismantled by Shaw's company/home contrast?",
+"The idea that any speaker maintains a single, consistent way of speaking across all contexts."
+],
+[
+"What provocative argument does Shaw make regarding foreigners who speak English too well?",
+"He argues that speaking too well insults the native speaker who cannot understand over-perfect English."
+],
+[
+"How does Shaw's 'insult' framing invert traditional linguistic hierarchies?",
+"It places the blame for communication breakdown on the over-perfect speaker rather than the broken speaker."
+],
+[
+"According to Shaw's social observation, how many Londoners speak bad English?",
+"999 out of every thousand people."
+],
+[
+"What is the purpose of Shaw's observation that almost all Londoners speak bad English?",
+"It reflects social realism by describing the actual speech community foreign learners enter."
+],
+[
+"Why might Shaw's advice to speak broken English feel disempowering to some language learners?",
+"It may conflict with learners who value high linguistic competence for self-respect and identity."
+],
+[
+"What context-specific limitation exists in Shaw's argument for broken English?",
+"It fails to specify clear boundaries between simple interactions and complex professional contexts."
+],
+[
+"Which simple, everyday interaction does Shaw use as an example of when broken English is sufficient?",
+"Asking for directions in the street."
+],
+[
+"According to Shaw's political view of communication, which speaker possesses true power?",
+"The speaker who communicates successfully, regardless of grammatical perfection."
+],
+[
+"What recurring stylistic technique does Shaw employ throughout his speech to challenge audience expectations?",
+"Rhetorical reversal or inversion of expectations."
+],
+[
+"Which sentence in Shaw's speech is identified as the most politically charged?",
+"'It is an insult to the native who cannot understand his own language when it is too well spoken.'"
+],
+[
+"Why is Shaw's broken-English argument considered incomplete as practical advice?",
+"It ignores professional contexts and the learner's right to full self-representation."
+],
+[
+"How does language variation across contexts necessitate audience awareness?",
+"Because language varies, speakers must adapt their style to suit their specific audience."
+],
+[
+"What is the primary purpose of developing audience awareness in speech?",
+"To select the linguistic form most likely to transmit meaning successfully."
+],
+[
+"Why does the existence of language variation mean no single form of English works universally?",
+"Successful communication requires adapting to the specific audience and context rather than following a fixed standard."
+],
+[
+"What defines a competent speaker under Shaw's implicit model of language competence?",
+"A speaker who reads the situation, adapts their language, and successfully conveys meaning."
+],
+[
+"How does Shaw's model of language competence anticipate modern sociolinguistics?",
+"It views language ability as context-dependent rather than an abstract, fixed system."
+],
+[
+"How does Shaw's own gramophone recording act as evidence for his linguistic argument?",
+"He adapts his spoken style specifically for an audience of foreign learners in that medium."
+],
+[
+"According to Shaw's implied argument, what quality defines true fluency in a speaker?",
+"Contextual intelligence rather than strict grammatical correctness."
+],
+[
+"What three interconnected elements form Shaw's integrated model of communicative competence?",
+"Understanding language variation, developing audience awareness, and prioritising successful meaning transmission."
+],
+[
+"In Shaw's view, why is performing linguistic correctness without being understood ineffective?",
+"It fails to achieve the core purpose of speech, which is the successful transmission of meaning."
+],
+[
+"How does Shaw's use of the BBC committee serve as a rhetorical strategy?",
+"It establishes the highest institutional authority only to demonstrate its inability to define a single standard."
+],
+[
+"What binary opposition does Shaw construct to clarify the limits of presentable speech?",
+"The binary between cultivated speech and ignorant or illiterate speech."
+],
+[
+"Why does Shaw argue that over-formality in a domestic setting is inappropriate?",
+"It violates contextual expectations and leads to social oddity rather than effective communication."
+],
+[
+"What does the keyhole device invite listeners to do during Shaw's speech?",
+"Overhear private, domestic speech to observe register variation in practice."
+],
+[
+"In Shaw's speech, the mumbling husband represents which public figure?",
+"The world's most famous playwright, George Bernard Shaw himself."
+],
+[
+"What political critique forms the core strength of Shaw's broken-English argument?",
+"A critique dismantling linguistic perfectionism and class-based language gatekeeping."
+],
+[
+"What dynamic quality replaces fixed grammatical rules in Shaw's model of language competence?",
+"Situational adaptability to achieve understanding."
+],
+[
+"What role does the gramophone medium play in Shaw's delivery of his speech?",
+"It serves as a specific context for which Shaw intentionally adapts his spoken delivery."
+],
+[
+"Why is assessing a speaker's ability solely through formal public speech flawed?",
+"It neglects the speaker's register variation and adaptability in informal, everyday contexts."
+]
+];
+
+(function () {
+  let order = DATA.map((_, i) => i);
+  let idx = 0;
+
+  const card = document.getElementById('card');
+  const qText = document.getElementById('qText');
+  const aText = document.getElementById('aText');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const shuffleBtn = document.getElementById('shuffleBtn');
+  const fill = document.getElementById('progressFill');
+  const label = document.getElementById('progressLabel');
+  const faces = card.querySelectorAll('.face');
+
+  function render() {
+    // Reset to the question side instantly so the next answer is never revealed mid-flip
+    card.classList.add('no-anim');
+    card.classList.remove('flipped');
+    const pair = DATA[order[idx]];
+    qText.textContent = pair[0];
+    aText.textContent = pair[1];
+    faces.forEach(f => { f.scrollTop = 0; });
+    void card.offsetWidth;
+    card.classList.remove('no-anim');
+
+    const total = DATA.length;
+    label.textContent = (idx + 1) + ' / ' + total;
+    fill.style.width = ((idx + 1) / total * 100) + '%';
+    prevBtn.disabled = idx === 0;
+    nextBtn.disabled = idx === total - 1;
+  }
+
+  function flip() { card.classList.toggle('flipped'); }
+  function prev() { if (idx > 0) { idx--; render(); } }
+  function next() { if (idx < DATA.length - 1) { idx++; render(); } }
+  function shuffle() {
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    idx = 0;
+    render();
+  }
+
+  card.addEventListener('click', flip);
+  prevBtn.addEventListener('click', function () { prev(); this.blur(); });
+  nextBtn.addEventListener('click', function () { next(); this.blur(); });
+  shuffleBtn.addEventListener('click', function () { shuffle(); this.blur(); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
+    else if (e.key === ' ' || e.code === 'Space') { e.preventDefault(); flip(); }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

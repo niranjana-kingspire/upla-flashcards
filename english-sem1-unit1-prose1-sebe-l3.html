@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spoken English &amp; Broken English - G.B. Shaw | Flashcards - L3</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: #f6f3ee;
+    color: #1a2332;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2.5rem 1rem 2rem;
+  }
+  .app { width: 100%; max-width: 560px; }
+  header { text-align: center; margin-bottom: 1.75rem; }
+  h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: normal;
+    font-size: 1.45rem;
+    line-height: 1.3;
+    color: #1a2332;
+    margin: 0 0 0.4rem;
+  }
+  .subtitle { font-size: 0.9rem; color: #6b7280; margin: 0; }
+
+  .progress { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+  .progress-track {
+    flex: 1;
+    height: 4px;
+    background: #e4ddd2;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0;
+    background: #2d5a7b;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+  .progress-label {
+    font-size: 0.85rem;
+    color: #6b7280;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .scene { perspective: 1200px; width: 100%; max-width: 560px; height: 320px; }
+  .card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 12px;
+    outline: none;
+  }
+  .card.flipped { transform: rotateY(180deg); }
+  .card.no-anim, .card.no-anim .face { transition: none !important; }
+  .card:focus-visible .face { box-shadow: 0 0 0 3px rgba(45,90,123,0.35), 0 2px 20px rgba(26,35,50,0.08); }
+
+  .face {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    box-shadow: 0 2px 20px rgba(26,35,50,0.08);
+    padding: 2rem 2.25rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  .front {
+    background: #ffffff;
+    border: 1px solid #d6cfc4;
+    transform: rotateY(0deg);
+  }
+  .back {
+    background: #2d5a7b;
+    color: #f0f6fa;
+    transform: rotateY(180deg);
+    visibility: hidden;
+    transition: visibility 0s 0.25s;
+  }
+  .card.flipped .back { visibility: visible; }
+  .card.flipped .front { visibility: hidden; transition: visibility 0s 0.25s; }
+
+  .label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #8a8275;
+    flex-shrink: 0;
+  }
+  .back .label { color: rgba(240,246,250,0.65); }
+  .text {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin: auto 0;
+    padding: 1rem 0;
+    white-space: pre-line;
+    overflow-wrap: break-word;
+  }
+  .hint {
+    font-size: 0.8rem;
+    color: #8a8275;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+  button {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.92rem;
+    border-radius: 8px;
+    padding: 0.65rem 1.25rem;
+    cursor: pointer;
+    transition: background 0.2s ease, opacity 0.2s ease;
+  }
+  button:focus-visible { outline: 3px solid rgba(45,90,123,0.35); outline-offset: 2px; }
+  .nav-btn {
+    background: #2d5a7b;
+    color: #ffffff;
+    border: 1px solid #2d5a7b;
+    min-width: 6.5rem;
+  }
+  .nav-btn:hover:not(:disabled) { background: #244a66; }
+  .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .shuffle-btn {
+    background: transparent;
+    color: #2d5a7b;
+    border: 1.5px dashed #2d5a7b;
+  }
+  .shuffle-btn:hover { background: rgba(45,90,123,0.06); }
+
+  .kbd-hint {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #8a8275;
+    margin-top: 1.25rem;
+  }
+  kbd {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.75rem;
+    background: #ffffff;
+    border: 1px solid #d6cfc4;
+    border-radius: 4px;
+    padding: 0.1rem 0.4rem;
+  }
+
+  @media (max-width: 480px) {
+    body { padding: 1.75rem 0.85rem 1.5rem; }
+    h1 { font-size: 1.25rem; }
+    .scene { height: 290px; }
+    .face { padding: 1.5rem 1.25rem; }
+    .text { font-size: 1rem; }
+    .kbd-hint { display: none; }
+    .nav-btn { min-width: 5.5rem; padding: 0.65rem 1rem; }
+    .shuffle-btn { padding: 0.65rem 0.9rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card, .progress-fill { transition: none; }
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <header>
+    <h1>Spoken English &amp; Broken English - G.B. Shaw | Flashcards - L3</h1>
+    <p class="subtitle">G.B. Shaw · 50 Flashcards</p>
+  </header>
+
+  <div class="progress" aria-hidden="true">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <span class="progress-label" id="progressLabel">1 / 1</span>
+  </div>
+
+  <div class="scene">
+    <div class="card" id="card" role="button" tabindex="0" aria-live="polite" aria-label="Flashcard. Activate to flip.">
+      <div class="face front">
+        <div class="label">Question</div>
+        <div class="text" id="qText"></div>
+        <div class="hint">Tap to reveal answer</div>
+      </div>
+      <div class="face back">
+        <div class="label">Answer</div>
+        <div class="text" id="aText"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="nav-btn" id="prevBtn" type="button">&larr; Prev</button>
+    <button class="shuffle-btn" id="shuffleBtn" type="button">Shuffle</button>
+    <button class="nav-btn" id="nextBtn" type="button">Next &rarr;</button>
+  </div>
+
+  <div class="kbd-hint"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> to navigate &nbsp;&middot;&nbsp; <kbd>Space</kbd> to flip</div>
+</main>
+
+<script>
+const DATA = [
+[
+"What is the first step in the framework for applying Shaw's argument on communication?",
+"State Shaw's principle clearly."
+],
+[
+"What is the second step in the framework for applying Shaw's argument on communication?",
+"Identify a real situation where the principle applies."
+],
+[
+"What is the final step in the framework for applying Shaw's argument on communication?",
+"Explain how following or ignoring the principle affects the outcome."
+],
+[
+"Why is a foreign tourist asking 'Metro? Please? Which way?' more likely to get help than one using complex, over-pronounced English?",
+"Direct broken phrases clearly signal communicative need and foreignness, prompting immediate assistance."
+],
+[
+"How does an over-rehearsed, formal register affect a job candidate speaking in a second language?",
+"It makes the candidate appear robotic and difficult to read, hindering the creation of rapport."
+],
+[
+"What is the primary language-learning benefit for a student who actively speaks in broken English in class?",
+"The student develops language skills faster than one who waits to form grammatically perfect sentences."
+],
+[
+"Which textual example from Shaw serves as the practical template for direct navigational requests?",
+"The Charing Cross request."
+],
+[
+"According to Shaw, how does signalling foreignness in speech aid practical communication?",
+"It enables understanding by setting clear expectations rather than obstructing the listener."
+],
+[
+"What is the first step when applying the 'correct' versus 'presentable' English framework?",
+"Identify whether the speaker is aiming for 'correct' or 'presentable' English."
+],
+[
+"What is the second step when applying the 'correct' versus 'presentable' English framework?",
+"Examine the standard the speaker is using and assess whether it is achievable."
+],
+[
+"What is the third step when applying the 'correct' versus 'presentable' English framework?",
+"Judge whether the speaker's approach successfully serves their communicative goal."
+],
+[
+"Why would Shaw advise a second-language learner against obsessively attempting to match a BBC presenter's accent?",
+"The ultimate communicative goal is to be intelligible, which presentable regional or national accents already achieve."
+],
+[
+"How should a dialect speaker, such as a Cockney speaker, adapt their speech for a job interview under Shaw's framework?",
+"They should smooth out only the most highly stigmatised dialect features to reach presentable speech."
+],
+[
+"How does Shaw normalise accent variation using his own background?",
+"He openly acknowledges his Irish accent and notes that listeners must accept his natural voice."
+],
+[
+"By what criterion should language evaluators judge speakers under Shaw's linguistic framework?",
+"Evaluators should judge speakers by communicative function and intelligibility rather than strict phonetic conformity."
+],
+[
+"What is the first step in analyzing register shifts using the company versus home manners framework?",
+"Identify the relationship between the speaker and the audience."
+],
+[
+"What is the second step in analyzing register shifts using the company versus home manners framework?",
+"Identify the level of familiarity between the interlocutors."
+],
+[
+"What is the third step in analyzing register shifts using the company versus home manners framework?",
+"Predict which register will be used and explain the underlying reason."
+],
+[
+"How does a doctor's register change when transitioning from speaking with a patient to speaking with a colleague?",
+"The doctor shifts from clear, jargon-free speech with the patient to rapid, abbreviated technical language with the colleague."
+],
+[
+"Why is texting a friend in abbreviated language considered contextually appropriate rather than incorrect?",
+"It employs home manners suitable for an informal setting rather than formal company manners."
+],
+[
+"How does a politician's language typically shift between a public campaign speech and a private dinner?",
+"It shifts from maximally careful and deliberate public speech to relaxed, imprecise private conversation."
+],
+[
+"What personal speech shift does Shaw share to show that register changes are universal?",
+"He contrasts his clear public address to thousands with his private muttering of 'Clock's it' to his wife."
+],
+[
+"How does Shaw interpret a speaker's shift between formal and informal registers across different settings?",
+"He views it as normal contextual intelligence rather than linguistic inconsistency or hypocrisy."
+],
+[
+"What is the first step in designing a strategy under the broken-English application framework?",
+"Identify the specific communication goal."
+],
+[
+"What is the second step in designing a strategy under the broken-English application framework?",
+"Identify the target audience and the social context."
+],
+[
+"What is the third step in designing a strategy under the broken-English application framework?",
+"Decide whether direct imperfect speech or careful formal speech best serves the goal."
+],
+[
+"Why is broken English disadvantageous during an official airport immigration check?",
+"Formal institutional settings require precise information delivered through complete, careful sentences."
+],
+[
+"In which specific situation is direct broken English more effective than grammatically complete sentences?",
+"Everyday navigation and informal social interactions in unfamiliar surroundings."
+],
+[
+"What language strategy is recommended for a non-native speaker leading a formal business meeting?",
+"Careful, natural speech that maintains clarity and professional credibility."
+],
+[
+"What is the primary misinterpretation regarding Shaw's recommendation of broken English?",
+"Mistaking his context-specific advice for navigation as a blanket endorsement of poor speech in all settings."
+],
+[
+"What is the first step in structuring a thematic analytical paragraph?",
+"State the theme and the reference text in a clear topic sentence."
+],
+[
+"What is the second step in structuring a thematic analytical paragraph?",
+"Provide specific textual evidence, such as a quote or reference."
+],
+[
+"What is the third step in structuring a thematic analytical paragraph?",
+"Explain what the selected textual moment illustrates about the broader theme."
+],
+[
+"What is the fourth step in structuring a thematic analytical paragraph?",
+"Connect the specific analysis to a wider observation about language or society."
+],
+[
+"What textual evidence does Shaw present to demonstrate that language variation is natural?",
+"The inability of expert members on the BBC committee to agree on the pronunciation of simple words like 'yes' and 'no'."
+],
+[
+"What broader truth about language is revealed by the BBC committee's inability to standardise pronunciation?",
+"Variation is an inherent feature of living languages rather than a system failure."
+],
+[
+"What social aspect of communication is illustrated by the contrast between company and home manners?",
+"Speakers dynamically adapt their speech registers based entirely on audience awareness and social context."
+],
+[
+"What essential requirement distinguishes true thematic analysis from simple plot retelling?",
+"Connecting textual evidence directly to a broader social, linguistic, or thematic insight."
+],
+[
+"The framework step that connects an applied scenario back to Shaw's main thesis is the _____ step.",
+"final"
+],
+[
+"According to Shaw, aiming for 'presentable' English focuses on intelligibility rather than matching a single _____ ideal.",
+"phonetic"
+],
+[
+"Term: Home Manners Speech",
+"Definition: Informal, abbreviated speech register used in comfortable, highly familiar social contexts."
+],
+[
+"Term: Company Manners Speech",
+"Definition: Careful, formal speech register used when communicating in public or professional settings."
+],
+[
+"Shaw argues that attempting to fix a living language to a single rigid standard misunderstands how _____ languages function.",
+"living"
+],
+[
+"In an analytical paragraph about Shaw, the textual evidence must be linked to a broader _____ idea.",
+"thematic"
+],
+[
+"Which element of speech should dialect speakers adjust to reach presentable English without losing their identity?",
+"The most heavily stigmatised phonological or dialectal features."
+],
+[
+"Why does attempting formal, perfect syntax often fail for a foreign traveller seeking immediate help?",
+"Slow, over-pronounced formal sentences obscure immediate communicative urgency."
+],
+[
+"What determines whether home manners or company manners should be deployed in conversation?",
+"The relationship with the audience and the degree of contextual formality."
+],
+[
+"In Shaw's view, native listeners respond to broken English from foreign travellers primarily by becoming more _____.",
+"cooperative"
+],
+[
+"Which communication context demands high precision and adherence to formal register over broken English?",
+"Academic, legal, or formal professional proceedings."
+],
+[
+"The core takeaway of Shaw's argument is that communicative _____ matters more than grammatical perfection.",
+"intent"
+]
+];
+
+(function () {
+  let order = DATA.map((_, i) => i);
+  let idx = 0;
+
+  const card = document.getElementById('card');
+  const qText = document.getElementById('qText');
+  const aText = document.getElementById('aText');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const shuffleBtn = document.getElementById('shuffleBtn');
+  const fill = document.getElementById('progressFill');
+  const label = document.getElementById('progressLabel');
+  const faces = card.querySelectorAll('.face');
+
+  function render() {
+    // Reset to the question side instantly so the next answer is never revealed mid-flip
+    card.classList.add('no-anim');
+    card.classList.remove('flipped');
+    const pair = DATA[order[idx]];
+    qText.textContent = pair[0];
+    aText.textContent = pair[1];
+    faces.forEach(f => { f.scrollTop = 0; });
+    void card.offsetWidth;
+    card.classList.remove('no-anim');
+
+    const total = DATA.length;
+    label.textContent = (idx + 1) + ' / ' + total;
+    fill.style.width = ((idx + 1) / total * 100) + '%';
+    prevBtn.disabled = idx === 0;
+    nextBtn.disabled = idx === total - 1;
+  }
+
+  function flip() { card.classList.toggle('flipped'); }
+  function prev() { if (idx > 0) { idx--; render(); } }
+  function next() { if (idx < DATA.length - 1) { idx++; render(); } }
+  function shuffle() {
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    idx = 0;
+    render();
+  }
+
+  card.addEventListener('click', flip);
+  prevBtn.addEventListener('click', function () { prev(); this.blur(); });
+  nextBtn.addEventListener('click', function () { next(); this.blur(); });
+  shuffleBtn.addEventListener('click', function () { shuffle(); this.blur(); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
+    else if (e.key === ' ' || e.code === 'Space') { e.preventDefault(); flip(); }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
