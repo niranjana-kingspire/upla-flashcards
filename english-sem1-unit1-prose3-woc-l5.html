@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wheelchair of Change - Deepa Malik | Flashcards - L5</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: #f6f3ee;
+    color: #1a2332;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2.5rem 1rem 2rem;
+  }
+  .app { width: 100%; max-width: 560px; }
+  header { text-align: center; margin-bottom: 1.75rem; }
+  h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: normal;
+    font-size: 1.45rem;
+    line-height: 1.3;
+    color: #1a2332;
+    margin: 0 0 0.4rem;
+  }
+  .subtitle { font-size: 0.9rem; color: #6b7280; margin: 0; }
+
+  .progress { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+  .progress-track {
+    flex: 1;
+    height: 4px;
+    background: #e4ddd2;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0;
+    background: #2d5a7b;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+  .progress-label {
+    font-size: 0.85rem;
+    color: #6b7280;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .scene { perspective: 1200px; width: 100%; max-width: 560px; height: 320px; }
+  .card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 12px;
+    outline: none;
+  }
+  .card.flipped { transform: rotateY(180deg); }
+  .card.no-anim, .card.no-anim .face { transition: none !important; }
+  .card:focus-visible .face { box-shadow: 0 0 0 3px rgba(45,90,123,0.35), 0 2px 20px rgba(26,35,50,0.08); }
+
+  .face {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    box-shadow: 0 2px 20px rgba(26,35,50,0.08);
+    padding: 2rem 2.25rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  .front {
+    background: #ffffff;
+    border: 1px solid #d6cfc4;
+    transform: rotateY(0deg);
+  }
+  .back {
+    background: #2d5a7b;
+    color: #f0f6fa;
+    transform: rotateY(180deg);
+    visibility: hidden;
+    transition: visibility 0s 0.25s;
+  }
+  .card.flipped .back { visibility: visible; }
+  .card.flipped .front { visibility: hidden; transition: visibility 0s 0.25s; }
+
+  .label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #8a8275;
+    flex-shrink: 0;
+  }
+  .back .label { color: rgba(240,246,250,0.65); }
+  .text {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin: auto 0;
+    padding: 1rem 0;
+    white-space: pre-line;
+    overflow-wrap: break-word;
+  }
+  .hint {
+    font-size: 0.8rem;
+    color: #8a8275;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+  button {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.92rem;
+    border-radius: 8px;
+    padding: 0.65rem 1.25rem;
+    cursor: pointer;
+    transition: background 0.2s ease, opacity 0.2s ease;
+  }
+  button:focus-visible { outline: 3px solid rgba(45,90,123,0.35); outline-offset: 2px; }
+  .nav-btn {
+    background: #2d5a7b;
+    color: #ffffff;
+    border: 1px solid #2d5a7b;
+    min-width: 6.5rem;
+  }
+  .nav-btn:hover:not(:disabled) { background: #244a66; }
+  .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .shuffle-btn {
+    background: transparent;
+    color: #2d5a7b;
+    border: 1.5px dashed #2d5a7b;
+  }
+  .shuffle-btn:hover { background: rgba(45,90,123,0.06); }
+
+  .kbd-hint {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #8a8275;
+    margin-top: 1.25rem;
+  }
+  kbd {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.75rem;
+    background: #ffffff;
+    border: 1px solid #d6cfc4;
+    border-radius: 4px;
+    padding: 0.1rem 0.4rem;
+  }
+
+  @media (max-width: 480px) {
+    body { padding: 1.75rem 0.85rem 1.5rem; }
+    h1 { font-size: 1.25rem; }
+    .scene { height: 290px; }
+    .face { padding: 1.5rem 1.25rem; }
+    .text { font-size: 1rem; }
+    .kbd-hint { display: none; }
+    .nav-btn { min-width: 5.5rem; padding: 0.65rem 1rem; }
+    .shuffle-btn { padding: 0.65rem 0.9rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card, .progress-fill { transition: none; }
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <header>
+    <h1>Wheelchair of Change - Deepa Malik | Flashcards - L5</h1>
+    <p class="subtitle">Deepa Malik · 30 Flashcards</p>
+  </header>
+
+  <div class="progress" aria-hidden="true">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <span class="progress-label" id="progressLabel">1 / 1</span>
+  </div>
+
+  <div class="scene">
+    <div class="card" id="card" role="button" tabindex="0" aria-live="polite" aria-label="Flashcard. Activate to flip.">
+      <div class="face front">
+        <div class="label">Question</div>
+        <div class="text" id="qText"></div>
+        <div class="hint">Tap to reveal answer</div>
+      </div>
+      <div class="face back">
+        <div class="label">Answer</div>
+        <div class="text" id="aText"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="nav-btn" id="prevBtn" type="button">&larr; Prev</button>
+    <button class="shuffle-btn" id="shuffleBtn" type="button">Shuffle</button>
+    <button class="nav-btn" id="nextBtn" type="button">Next &rarr;</button>
+  </div>
+
+  <div class="kbd-hint"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> to navigate &nbsp;&middot;&nbsp; <kbd>Space</kbd> to flip</div>
+</main>
+
+<script>
+const DATA = [
+[
+"At Bloom's Taxonomy Level L5 (Evaluate), what is the primary objective when analyzing Deepa Malik's interview?",
+"To assess how effectively her core themes are communicated and form a reasoned judgement on the interview's lasting significance."
+],
+[
+"Why is Deepa Malik's communication of resilience evaluated as highly effective?",
+"Her narrative relies on specific, verifiable, and measurable achievements rather than abstract claims about willpower."
+],
+[
+"Which specific athletic transition in Deepa Malik's narrative serves as concrete evidence of her resilience?",
+"Her switch from javelin to shot put achieved within an eleven-month timeframe."
+],
+[
+"How does Deepa Malik's switch from javelin to shot put within eleven months impact the reader's reception of her theme of resilience?",
+"It provides a measurable standard of achievement that readers cannot easily dismiss as mere rhetoric."
+],
+[
+"Why is Deepa Malik's theme of a positive attitude considered effective only when evaluated within its personal context?",
+"Her positivity is grounded in specific advantages, including a supportive family background, an Army upbringing, and financial stability."
+],
+[
+"What potential barrier might readers without robust personal support systems face when encountering Deepa Malik's model of positivity?",
+"They may find her framework of optimism difficult to apply to their own less privileged personal circumstances."
+],
+[
+"Which theme in Deepa Malik's interview is described as having the most powerful overall scope?",
+"Inclusion."
+],
+[
+"Why is the effectiveness of Deepa Malik's vision for disability inclusion limited in terms of direct legal or policy outcome?",
+"Inclusion requires systemic and policy changes that lie beyond the direct control of any individual athlete or interview."
+],
+[
+"According to L5 evaluative criteria, what is the primary social function of Deepa Malik's interview regarding disability inclusion?",
+"Generating public awareness and pressure for reform, rather than directly implementing policy changes."
+],
+[
+"In critical analysis of disability narratives, what is meant by the limitation of 'individual exceptionalism'?",
+"The risk that an extraordinary individual's success implies non-achieving disabled people simply lack sufficient personal effort."
+],
+[
+"How can the presentation of Deepa Malik as an exceptional sports achiever inadvertently perpetuate social stigma against disabled individuals?",
+"It may reinforce the misconception that overcoming disability barriers is entirely a matter of individual effort rather than societal responsibility."
+],
+[
+"What specific policy setback is highlighted to illustrate the potential drawback of Deepa Malik's constructive tone?",
+"A 99.75% budget cut targeting disability sports programs."
+],
+[
+"How might Deepa Malik's consistently optimistic tone regarding the 99.75% budget cut be critically viewed as a limitation?",
+"It risks understating the urgency of the funding crisis, potentially delaying a rapid policy response."
+],
+[
+"What alternative rhetorical approach to the 99.75% budget cut might have produced a faster policy response than Deepa Malik's optimistic tone?",
+"A more forceful, direct critique of the budget decision."
+],
+[
+"Why is Deepa Malik's interview categorized as a landmark document in Indian disability sports history?",
+"It captured the moment para-sports gained national visibility and used that platform to demand systemic reform with evidence and grace."
+],
+[
+"When evaluating the overall genre and utility of Deepa Malik's interview, where does its primary strength lie?",
+"As a tool for inspiration and social education."
+],
+[
+"Why is Deepa Malik's interview evaluated as relatively ineffective when judged strictly as a policy document?",
+"An interview lacks the administrative authority and legal mechanisms required to enforce structural policy changes."
+],
+[
+"What is the primary significance of Deepa Malik's interview summarized in the overall evaluation of its impact?",
+"Its true power lies in making the invisible visible to the broader public."
+],
+[
+"What fundamental tension exists when evaluating an exceptional individual's disability narrative as a catalyst for societal change?",
+"The tension between framing disability inclusion as an individual effort versus a collective societal responsibility."
+],
+[
+"According to L5 evaluative standards, what key component must a comprehensive text evaluation include alongside crediting achievements?",
+"An honest examination of what the text cannot structurally achieve on its own."
+],
+[
+"The switch from javelin to shot put in 11 months demonstrates resilience because it is a concrete, _____ achievement rather than an abstract claim.",
+"measurable"
+],
+[
+"Deepa Malik's financial stability and army family background are essential contextual factors underlying her model of _____.",
+"positive attitude"
+],
+[
+"Deepa Malik's vision for inclusion is clear and detailed, but the interview cannot enforce policy because systemic reform depends on factors beyond _____ control.",
+"individual"
+],
+[
+"The phenomenon where an elite athlete's success implies disabled individuals without medals have not tried hard enough is known as _____.",
+"individual exceptionalism"
+],
+[
+"A potential downside of maintaining a consistently constructive tone during severe funding reductions is that it may understate policy _____.",
+"urgency"
+],
+[
+"Deepa Malik used the rising national visibility of Indian para-sports to advocate for systemic change using three key qualities: evidence, specificity, and _____.",
+"grace"
+],
+[
+"Term: Individual Exceptionalism (Disability Analysis)",
+"Definition: A narrative phenomenon where an individual's extraordinary achievements inadvertently shift the burden of inclusion onto personal willpower rather than social responsibility."
+],
+[
+"How does Deepa Malik's background in an Army family affect the generalisability of her positive outlook?",
+"It provides personal security and financial stability that many disabled individuals lacking such support systems do not possess."
+],
+[
+"What structural limitation prevents an inspirational interview from functioning as a formal instrument for legal or political change?",
+"Interviews can shape public consciousness and exert social pressure, but they lack administrative authority to enact binding legislation."
+],
+[
+"How does an L5 evaluation balance Deepa Malik's inspirational narrative against systemic critiques of disability rights in India?",
+"By acknowledging her success in generating social awareness while noting the limitations of individual triumph to fix structural policy deficits."
+]
+];
+
+(function () {
+  let order = DATA.map((_, i) => i);
+  let idx = 0;
+
+  const card = document.getElementById('card');
+  const qText = document.getElementById('qText');
+  const aText = document.getElementById('aText');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const shuffleBtn = document.getElementById('shuffleBtn');
+  const fill = document.getElementById('progressFill');
+  const label = document.getElementById('progressLabel');
+  const faces = card.querySelectorAll('.face');
+
+  function render() {
+    // Reset to the question side instantly so the next answer is never revealed mid-flip
+    card.classList.add('no-anim');
+    card.classList.remove('flipped');
+    const pair = DATA[order[idx]];
+    qText.textContent = pair[0];
+    aText.textContent = pair[1];
+    faces.forEach(f => { f.scrollTop = 0; });
+    void card.offsetWidth;
+    card.classList.remove('no-anim');
+
+    const total = DATA.length;
+    label.textContent = (idx + 1) + ' / ' + total;
+    fill.style.width = ((idx + 1) / total * 100) + '%';
+    prevBtn.disabled = idx === 0;
+    nextBtn.disabled = idx === total - 1;
+  }
+
+  function flip() { card.classList.toggle('flipped'); }
+  function prev() { if (idx > 0) { idx--; render(); } }
+  function next() { if (idx < DATA.length - 1) { idx++; render(); } }
+  function shuffle() {
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    idx = 0;
+    render();
+  }
+
+  card.addEventListener('click', flip);
+  prevBtn.addEventListener('click', function () { prev(); this.blur(); });
+  nextBtn.addEventListener('click', function () { next(); this.blur(); });
+  shuffleBtn.addEventListener('click', function () { shuffle(); this.blur(); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
+    else if (e.key === ' ' || e.code === 'Space') { e.preventDefault(); flip(); }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

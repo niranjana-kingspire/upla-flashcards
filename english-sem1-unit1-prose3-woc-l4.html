@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wheelchair of Change - Deepa Malik | Flashcards - L4</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: #f6f3ee;
+    color: #1a2332;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2.5rem 1rem 2rem;
+  }
+  .app { width: 100%; max-width: 560px; }
+  header { text-align: center; margin-bottom: 1.75rem; }
+  h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: normal;
+    font-size: 1.45rem;
+    line-height: 1.3;
+    color: #1a2332;
+    margin: 0 0 0.4rem;
+  }
+  .subtitle { font-size: 0.9rem; color: #6b7280; margin: 0; }
+
+  .progress { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+  .progress-track {
+    flex: 1;
+    height: 4px;
+    background: #e4ddd2;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0;
+    background: #2d5a7b;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+  .progress-label {
+    font-size: 0.85rem;
+    color: #6b7280;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .scene { perspective: 1200px; width: 100%; max-width: 560px; height: 320px; }
+  .card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 12px;
+    outline: none;
+  }
+  .card.flipped { transform: rotateY(180deg); }
+  .card.no-anim, .card.no-anim .face { transition: none !important; }
+  .card:focus-visible .face { box-shadow: 0 0 0 3px rgba(45,90,123,0.35), 0 2px 20px rgba(26,35,50,0.08); }
+
+  .face {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    box-shadow: 0 2px 20px rgba(26,35,50,0.08);
+    padding: 2rem 2.25rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  .front {
+    background: #ffffff;
+    border: 1px solid #d6cfc4;
+    transform: rotateY(0deg);
+  }
+  .back {
+    background: #2d5a7b;
+    color: #f0f6fa;
+    transform: rotateY(180deg);
+    visibility: hidden;
+    transition: visibility 0s 0.25s;
+  }
+  .card.flipped .back { visibility: visible; }
+  .card.flipped .front { visibility: hidden; transition: visibility 0s 0.25s; }
+
+  .label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #8a8275;
+    flex-shrink: 0;
+  }
+  .back .label { color: rgba(240,246,250,0.65); }
+  .text {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin: auto 0;
+    padding: 1rem 0;
+    white-space: pre-line;
+    overflow-wrap: break-word;
+  }
+  .hint {
+    font-size: 0.8rem;
+    color: #8a8275;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+  button {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.92rem;
+    border-radius: 8px;
+    padding: 0.65rem 1.25rem;
+    cursor: pointer;
+    transition: background 0.2s ease, opacity 0.2s ease;
+  }
+  button:focus-visible { outline: 3px solid rgba(45,90,123,0.35); outline-offset: 2px; }
+  .nav-btn {
+    background: #2d5a7b;
+    color: #ffffff;
+    border: 1px solid #2d5a7b;
+    min-width: 6.5rem;
+  }
+  .nav-btn:hover:not(:disabled) { background: #244a66; }
+  .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .shuffle-btn {
+    background: transparent;
+    color: #2d5a7b;
+    border: 1.5px dashed #2d5a7b;
+  }
+  .shuffle-btn:hover { background: rgba(45,90,123,0.06); }
+
+  .kbd-hint {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #8a8275;
+    margin-top: 1.25rem;
+  }
+  kbd {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.75rem;
+    background: #ffffff;
+    border: 1px solid #d6cfc4;
+    border-radius: 4px;
+    padding: 0.1rem 0.4rem;
+  }
+
+  @media (max-width: 480px) {
+    body { padding: 1.75rem 0.85rem 1.5rem; }
+    h1 { font-size: 1.25rem; }
+    .scene { height: 290px; }
+    .face { padding: 1.5rem 1.25rem; }
+    .text { font-size: 1rem; }
+    .kbd-hint { display: none; }
+    .nav-btn { min-width: 5.5rem; padding: 0.65rem 1rem; }
+    .shuffle-btn { padding: 0.65rem 0.9rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card, .progress-fill { transition: none; }
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <header>
+    <h1>Wheelchair of Change - Deepa Malik | Flashcards - L4</h1>
+    <p class="subtitle">Deepa Malik · 52 Flashcards</p>
+  </header>
+
+  <div class="progress" aria-hidden="true">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <span class="progress-label" id="progressLabel">1 / 1</span>
+  </div>
+
+  <div class="scene">
+    <div class="card" id="card" role="button" tabindex="0" aria-live="polite" aria-label="Flashcard. Activate to flip.">
+      <div class="face front">
+        <div class="label">Question</div>
+        <div class="text" id="qText"></div>
+        <div class="hint">Tap to reveal answer</div>
+      </div>
+      <div class="face back">
+        <div class="label">Answer</div>
+        <div class="text" id="aText"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="nav-btn" id="prevBtn" type="button">&larr; Prev</button>
+    <button class="shuffle-btn" id="shuffleBtn" type="button">Shuffle</button>
+    <button class="nav-btn" id="nextBtn" type="button">Next &rarr;</button>
+  </div>
+
+  <div class="kbd-hint"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> to navigate &nbsp;&middot;&nbsp; <kbd>Space</kbd> to flip</div>
+</main>
+
+<script>
+const DATA = [
+[
+"How does Deepa Malik frame the absence of federations, coaches, and funding at Bloom's L4 analysis level?",
+"She frames them as systemic failures of a national structure designed without disabled people in mind."
+],
+[
+"Deepa Malik identifies _____ as the primary root cause behind systemic challenges such as inaccessible buildings and mishandled wheelchairs.",
+"unawareness"
+],
+[
+"Which specific architectural challenge in the text illustrates society's failure to include disabled people in its mental map?",
+"Inaccessible building design by architects who failed to consider disabled people as part of the general public."
+],
+[
+"How does Deepa Malik's interview frame the relationship between physical infrastructure and social inclusion?",
+"She argues that visible physical infrastructure actively shapes social attitudes and creates mental inclusion."
+],
+[
+"According to Deepa Malik's analytical framework, what social consequence directly results from the absence of accessible infrastructure?",
+"It causes the systemic invisibility of disabled people in society."
+],
+[
+"How does Deepa Malik rhetorically frame systemic problems to encourage structural reform?",
+"She frames problems as fixable gaps to be filled rather than individual failures to be blamed."
+],
+[
+"What is the primary advocacy benefit of Deepa Malik framing systemic issues as gaps rather than blameworthy failures?",
+"It invites collaboration from stakeholders rather than provoking defensive reactions."
+],
+[
+"Which key statistic does Deepa Malik present to highlight systemic issues in sports funding policy?",
+"A 99.75% budget cut."
+],
+[
+"What policy question does Deepa Malik intend to signal by citing the 99.75% budget cut statistic?",
+"She questions where national funding is allocated and whether it reaches para-athletes."
+],
+[
+"Why does Deepa Malik avoid using the 99.75% budget cut figure to provoke emotional outrage?",
+"She uses it structurally to direct attention toward policy accountability rather than emotional grievance."
+],
+[
+"Concept: India as 'at par with the world'",
+"Definition: A rhetorical framing that presents India's disability inclusion gap as a specific, fixable blind spot rather than an inherent national failure."
+],
+[
+"In Deepa Malik's cyclic model of para-sport challenges, what does reduced funding directly restrict?",
+"Access to sports competition."
+],
+[
+"Within Deepa Malik's systemic cycle of challenges, how does limited access to competition affect public perception?",
+"It reduces the visibility of para-athletes in society."
+],
+[
+"According to the systemic cyclic model of para-sport challenges, what outcome stems directly from low athletic visibility?",
+"It diminishes general public awareness regarding para-sports."
+],
+[
+"In the cyclic systemic model of para-athlete advocacy, what is the direct consequence of diminished public awareness?",
+"It lowers political priority for disability sports reform."
+],
+[
+"How does low political priority complete the self-reinforcing cyclic model of para-sport challenges?",
+"It leads to reduced financial allocations, restarting the restrictive systemic cycle."
+],
+[
+"What distinguishes an L4 analytical view of para-athlete challenges from an L1 or L3 view?",
+"Viewing challenges as an interconnected, self-reinforcing systemic cycle rather than an isolated list of personal problems."
+],
+[
+"How does Deepa Malik rhetorically demonstrate resilience without explicitly stating 'I am resilient'?",
+"She constructs an accumulation of her concrete, continuous physical actions across various disciplines."
+],
+[
+"Name two non-traditional motor sporting activities Deepa Malik engaged in to rhetorically construct her resilience.",
+"Rally driving and biking."
+],
+[
+"Which aquatic sport is cited as part of the cumulative list of actions demonstrating Deepa Malik's resilience?",
+"Swimming."
+],
+[
+"How does Deepa Malik's adaptation within sports events demonstrate her resilience rhetorically?",
+"By switching athletic events and tangibly improving her performance distance by a metre."
+],
+[
+"In her interview, Deepa Malik shifts from using 'I' to using 'we' when transitioning to which specific topic?",
+"Disability inclusion and group representation."
+],
+[
+"Complete Deepa Malik's rhetorical statement on collective representation: \"when I say we, I represent the _____.\"",
+"specially-abled community"
+],
+[
+"What is the primary rhetorical effect of Deepa Malik shifting her personal pronoun from 'I' to 'we'?",
+"It positions her as a collective spokesperson for a group rather than an individual exception."
+],
+[
+"Why was Deepa Malik's public declaration of happiness in a wheelchair considered socially provocative?",
+"It directly challenged the dominant societal narrative that disability is synonymous with suffering."
+],
+[
+"Which vehicle served as the primary arena making Deepa Malik's challenge to societal disability narratives undeniable?",
+"Competitive sport."
+],
+[
+"Which literary device does Deepa Malik employ when addressing negative claims made by her critics?",
+"Direct verbatim quoting of her critics' statements without immediate verbal counter-attacks."
+],
+[
+"What exact claim made by her critics does Deepa Malik directly quote in the text?",
+"\"She has aged now... she will never be a medallist\"."
+],
+[
+"How does Deepa Malik structure her response to her critics' doubts regarding her medal prospects?",
+"She implies the counter-argument by letting the reader recall her actual silver medal win."
+],
+[
+"Why is Deepa Malik's implicit rebuttal to her critics more persuasive than an emotional argument?",
+"It refutes subjective criticism using unassailable factual achievement rather than emotional feeling."
+],
+[
+"Describe the thematic progression present in the overall structure of Deepa Malik's interview.",
+"It progresses outwards from personal resilience, to positive attitude in sport, to policy and infrastructure inclusion."
+],
+[
+"Which specific theme corresponds to the initial, personal story phase of Deepa Malik's interview structure?",
+"Resilience."
+],
+[
+"Which theme bridges personal experience and societal advocacy in the middle structural phase of the interview?",
+"Positive attitude."
+],
+[
+"Which structural phase of the interview corresponds directly to the theme of inclusion?",
+"The discussion on policy and infrastructure."
+],
+[
+"How can the overall trajectory of theme progression in Deepa Malik's interview be structurally described?",
+"As an 'inside-out' progression expanding from the individual to wider society."
+],
+[
+"At Bloom's Level L4, what is the main objective when analysing themes in a text?",
+"Examining the specific rhetorical techniques and choices used to construct and communicate themes."
+],
+[
+"How does the lack of informed media coverage fit into Deepa Malik's analysis of para-sport challenges?",
+"As a systemic institutional failure rooted in general societal unawareness rather than an isolated journalistic error."
+],
+[
+"The mishandling of a wheelchair user by an airline staff member is attributed to a failure of _____ in their mental map of the public.",
+"incorporating disabled people"
+],
+[
+"What political argument is embedded within Deepa Malik's discussion of accessible building design?",
+"Physical design directly determines and shapes social attitudes toward disabled people."
+],
+[
+"Deepa Malik's decision to avoid attacking authorities during her interview is a deliberate choice to foster _____.",
+"collaboration"
+],
+[
+"In the context of sports policy, what structural function does factual data serve in Deepa Malik's discourse?",
+"It transforms personal lived experience into an objective policy discussion."
+],
+[
+"How does framing disability inclusion gaps as 'fixable blind spots' affect public perception of national capability?",
+"It reinforces that the nation is capable while isolating disability inclusion as an actionable policy task."
+],
+[
+"In the interconnected cycle of para-athlete challenges, what directly governs the level of political priority given to para-sports?",
+"Public awareness."
+],
+[
+"According to Deepa Malik's rhetorical construction, how is an attitude of positivity made subversive?",
+"By openly refusing the pre-assigned societal role of the suffering victim."
+],
+[
+"What type of evidence does Deepa Malik prioritise over feelings when responding to public scepticism?",
+"Factual athletic achievement."
+],
+[
+"In Deepa Malik's advocacy, physical infrastructure is asserted to be a prerequisite for social _____.",
+"inclusion"
+],
+[
+"What critical difference exists between treating challenges as isolated incidents versus treating them as systemic issues?",
+"Systemic analysis identifies root structural failures, whereas isolated analysis blames individual circumstances."
+],
+[
+"Which continued military-related events did Deepa Malik participate in from her wheelchair to showcase action-based resilience?",
+"Army events."
+],
+[
+"What analytical insight explains why funding and media awareness cannot be solved independently in para-sports?",
+"They exist in a continuous cycle where each element directly influences and reinforces the next."
+],
+[
+"Deepa Malik uses her personal narrative primarily as a foundation to establish a broader _____ argument.",
+"structural"
+],
+[
+"By quoting her critics verbatim, Deepa Malik creates a device where the reader fills in the missing answer using _____.",
+"implication"
+],
+[
+"What specific medal result serves as the unspoken factual rebuttal to the critics who claimed Deepa Malik would never medal?",
+"A silver medal."
+]
+];
+
+(function () {
+  let order = DATA.map((_, i) => i);
+  let idx = 0;
+
+  const card = document.getElementById('card');
+  const qText = document.getElementById('qText');
+  const aText = document.getElementById('aText');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const shuffleBtn = document.getElementById('shuffleBtn');
+  const fill = document.getElementById('progressFill');
+  const label = document.getElementById('progressLabel');
+  const faces = card.querySelectorAll('.face');
+
+  function render() {
+    // Reset to the question side instantly so the next answer is never revealed mid-flip
+    card.classList.add('no-anim');
+    card.classList.remove('flipped');
+    const pair = DATA[order[idx]];
+    qText.textContent = pair[0];
+    aText.textContent = pair[1];
+    faces.forEach(f => { f.scrollTop = 0; });
+    void card.offsetWidth;
+    card.classList.remove('no-anim');
+
+    const total = DATA.length;
+    label.textContent = (idx + 1) + ' / ' + total;
+    fill.style.width = ((idx + 1) / total * 100) + '%';
+    prevBtn.disabled = idx === 0;
+    nextBtn.disabled = idx === total - 1;
+  }
+
+  function flip() { card.classList.toggle('flipped'); }
+  function prev() { if (idx > 0) { idx--; render(); } }
+  function next() { if (idx < DATA.length - 1) { idx++; render(); } }
+  function shuffle() {
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    idx = 0;
+    render();
+  }
+
+  card.addEventListener('click', flip);
+  prevBtn.addEventListener('click', function () { prev(); this.blur(); });
+  nextBtn.addEventListener('click', function () { next(); this.blur(); });
+  shuffleBtn.addEventListener('click', function () { shuffle(); this.blur(); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
+    else if (e.key === ' ' || e.code === 'Space') { e.preventDefault(); flip(); }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
