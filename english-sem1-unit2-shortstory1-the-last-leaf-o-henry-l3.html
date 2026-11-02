@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Last Leaf - O. Henry | Flashcards - L3</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: #f6f3ee;
+    color: #1a2332;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2.5rem 1rem 2rem;
+  }
+  .app { width: 100%; max-width: 560px; }
+  header { text-align: center; margin-bottom: 1.75rem; }
+  h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: normal;
+    font-size: 1.45rem;
+    line-height: 1.3;
+    color: #1a2332;
+    margin: 0 0 0.4rem;
+  }
+  .subtitle { font-size: 0.9rem; color: #6b7280; margin: 0; }
+
+  .progress { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+  .progress-track {
+    flex: 1;
+    height: 4px;
+    background: #e4ddd2;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0;
+    background: #2d5a7b;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+  .progress-label {
+    font-size: 0.85rem;
+    color: #6b7280;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .scene { perspective: 1200px; width: 100%; max-width: 560px; height: 320px; }
+  .card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 12px;
+    outline: none;
+  }
+  .card.flipped { transform: rotateY(180deg); }
+  .card.no-anim, .card.no-anim .face { transition: none !important; }
+  .card:focus-visible .face { box-shadow: 0 0 0 3px rgba(45,90,123,0.35), 0 2px 20px rgba(26,35,50,0.08); }
+
+  .face {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    box-shadow: 0 2px 20px rgba(26,35,50,0.08);
+    padding: 2rem 2.25rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  .front {
+    background: #ffffff;
+    border: 1px solid #d6cfc4;
+    transform: rotateY(0deg);
+  }
+  .back {
+    background: #2d5a7b;
+    color: #f0f6fa;
+    transform: rotateY(180deg);
+    visibility: hidden;
+    transition: visibility 0s 0.25s;
+  }
+  .card.flipped .back { visibility: visible; }
+  .card.flipped .front { visibility: hidden; transition: visibility 0s 0.25s; }
+
+  .label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #8a8275;
+    flex-shrink: 0;
+  }
+  .back .label { color: rgba(240,246,250,0.65); }
+  .text {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin: auto 0;
+    padding: 1rem 0;
+    white-space: pre-line;
+    overflow-wrap: break-word;
+  }
+  .hint {
+    font-size: 0.8rem;
+    color: #8a8275;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+  button {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.92rem;
+    border-radius: 8px;
+    padding: 0.65rem 1.25rem;
+    cursor: pointer;
+    transition: background 0.2s ease, opacity 0.2s ease;
+  }
+  button:focus-visible { outline: 3px solid rgba(45,90,123,0.35); outline-offset: 2px; }
+  .nav-btn {
+    background: #2d5a7b;
+    color: #ffffff;
+    border: 1px solid #2d5a7b;
+    min-width: 6.5rem;
+  }
+  .nav-btn:hover:not(:disabled) { background: #244a66; }
+  .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .shuffle-btn {
+    background: transparent;
+    color: #2d5a7b;
+    border: 1.5px dashed #2d5a7b;
+  }
+  .shuffle-btn:hover { background: rgba(45,90,123,0.06); }
+
+  .kbd-hint {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #8a8275;
+    margin-top: 1.25rem;
+  }
+  kbd {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.75rem;
+    background: #ffffff;
+    border: 1px solid #d6cfc4;
+    border-radius: 4px;
+    padding: 0.1rem 0.4rem;
+  }
+
+  @media (max-width: 480px) {
+    body { padding: 1.75rem 0.85rem 1.5rem; }
+    h1 { font-size: 1.25rem; }
+    .scene { height: 290px; }
+    .face { padding: 1.5rem 1.25rem; }
+    .text { font-size: 1rem; }
+    .kbd-hint { display: none; }
+    .nav-btn { min-width: 5.5rem; padding: 0.65rem 1rem; }
+    .shuffle-btn { padding: 0.65rem 0.9rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card, .progress-fill { transition: none; }
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <header>
+    <h1>The Last Leaf - O. Henry | Flashcards - L3</h1>
+    <p class="subtitle">O. Henry · 55 Flashcards</p>
+  </header>
+
+  <div class="progress" aria-hidden="true">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <span class="progress-label" id="progressLabel">1 / 1</span>
+  </div>
+
+  <div class="scene">
+    <div class="card" id="card" role="button" tabindex="0" aria-live="polite" aria-label="Flashcard. Activate to flip.">
+      <div class="face front">
+        <div class="label">Question</div>
+        <div class="text" id="qText"></div>
+        <div class="hint">Tap to reveal answer</div>
+      </div>
+      <div class="face back">
+        <div class="label">Answer</div>
+        <div class="text" id="aText"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="nav-btn" id="prevBtn" type="button">&larr; Prev</button>
+    <button class="shuffle-btn" id="shuffleBtn" type="button">Shuffle</button>
+    <button class="nav-btn" id="nextBtn" type="button">Next &rarr;</button>
+  </div>
+
+  <div class="kbd-hint"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> to navigate &nbsp;&middot;&nbsp; <kbd>Space</kbd> to flip</div>
+</main>
+
+<script>
+const DATA = [
+[
+"What defines the application of character analysis at Bloom's L3 level?",
+"It uses a diagnostic framework from original characters to interpret a new, unfamiliar scenario."
+],
+[
+"Which three elements form the core diagnostic lens in Johnsy's character analysis?",
+"Belief, willpower, and physical survival form the core diagnostic lens."
+],
+[
+"In the hypothetical Meera scenario, what serves as the arbitrary external sign of her recovery?",
+"A wall clock in her ward serves as the arbitrary external sign."
+],
+[
+"What psychological condition causes patient Meera anxiety during her hospital stay?",
+"The temporary silence of the wall clock causes her anxiety."
+],
+[
+"According to the Johnsy diagnostic pattern, why does an arbitrary sign govern a patient's recovery?",
+"The sign becomes fused with the patient's sense of control over an uncontrollable illness."
+],
+[
+"What two methods can restore a patient's will to live under the Johnsy diagnostic framework?",
+"Restoring the will to live requires either changing the belief or manipulating the sign itself."
+],
+[
+"What two stages define the arc of Behrman's sacrifice pattern?",
+"Years without visible achievement followed by one decisive, costly act giving life purpose."
+],
+[
+"In the applied teacher scenario, what action mirrors Behrman's selfless risk?",
+"Teaching flood-relief children during a crisis at personal health risk mirrors Behrman's risk."
+],
+[
+"What is step 1 of the transferable three-step character analysis template?",
+"Step 1 is identifying the belief that the character holds."
+],
+[
+"What is step 2 of the transferable three-step character analysis template?",
+"Step 2 is identifying the physical or behavioural effect produced by the belief."
+],
+[
+"What is step 3 of the transferable three-step character analysis template?",
+"Step 3 is identifying who intervenes and how they intervene."
+],
+[
+"What is the primary purpose of using the three-step character analysis template on new scenarios?",
+"It proves that the analytical diagnostic tool is reusable and not story-specific."
+],
+[
+"What is step 1 in the four-step method for decoding an unfamiliar literary symbol?",
+"Step 1 is identifying the literal object in the narrative."
+],
+[
+"What is step 2 in the four-step method for decoding an unfamiliar literary symbol?",
+"Step 2 is identifying the belief a character attaches to the object."
+],
+[
+"What is step 3 in the four-step method for decoding an unfamiliar literary symbol?",
+"Step 3 is identifying the larger human value the object stands for."
+],
+[
+"What is step 4 in the four-step method for decoding an unfamiliar literary symbol?",
+"Step 4 is noting how the narrative ending changes or reverses the symbol's meaning."
+],
+[
+"In the worked candle example, what represents the literal symbol object?",
+"The lit candle in the window represents the literal symbol object."
+],
+[
+"In the candle example, what belief does the traveller attach to the lit window?",
+"The traveller believes that reaching the light means survival and losing it means death."
+],
+[
+"What underlying human value does the lit candle symbolize in the worked example?",
+"The candle symbolizes hope guiding the lost home."
+],
+[
+"What reveal at the end of the candle story changes the meaning of the symbol?",
+"An old woman had been secretly refuelling the candle's oil all night at her own cost."
+],
+[
+"How does the ending reveal of the candle story structurally mirror the leaf in 'The Last Leaf'?",
+"Both reveals prove the sustaining sign was a deliberate, costly act of unseen protection."
+],
+[
+"What is step 1 of O. Henry's three-part twist ending structure?",
+"Step 1 is establishing a false but reasonable assumption for the reader."
+],
+[
+"What is step 2 of O. Henry's three-part twist ending structure?",
+"Step 2 is withholding one key fact from the reader."
+],
+[
+"What is step 3 of O. Henry's three-part twist ending structure?",
+"Step 3 is revealing the withheld fact at the end to reverse the meaning retroactively."
+],
+[
+"What false assumption is established at the start of the hypothetical miser scenario?",
+"The false assumption established is that the miser is simply selfish."
+],
+[
+"What key fact is withheld from the reader in the hypothetical miser scenario?",
+"The withheld fact is that he secretly funded an orphanage for twenty years."
+],
+[
+"How does opening the diary at the end of the miser scenario alter the narrative?",
+"It retroactively reverses the reader's judgement of the miser from selfish to generous."
+],
+[
+"How does the miser's character reversal structurally match Behrman's revelation?",
+"Both reverse the character's perception from a perceived failure to a selfless benefactor."
+],
+[
+"What defines situational irony when transferred to a new narrative context?",
+"An expectation is reversed when the character least expected to act generously performs a hidden, selfless act."
+],
+[
+"In O. Henry's irony pattern, how does Behrman's character expectation contrast with his ultimate act?",
+"The character least expected to succeed turns out to paint a masterpiece and save a life."
+],
+[
+"How is the theme of hope demonstrated in a hospital setting outside 'The Last Leaf'?",
+"A small daily improvement in lab results keeps a patient's family motivated."
+],
+[
+"How is the theme of self-sacrifice illustrated in a modern epidemic context?",
+"A volunteer nurse works through personal illness so patients are not left unattended."
+],
+[
+"How is the theme of friendship shown in an everyday neighbourhood context?",
+"A neighbour quietly checks on an elderly widow every evening without being asked."
+],
+[
+"How is the theme of the 'will to live' applied in a sports injury recovery setting?",
+"Injured athletes who set specific recovery goals heal faster due to the mind-body link."
+],
+[
+"What psychological concept connects Johnsy's illness to the sports clinic recovery findings?",
+"Both demonstrate the mind-body link where belief and goal-setting directly affect physical healing."
+],
+[
+"What common trait links Sue's devotion to Johnsy with the neighbour checking on the widow?",
+"Both demonstrate undemonstrative devotion shown through quiet, consistent daily actions."
+],
+[
+"What common action links Behrman's final act with the volunteer nurse working through illness?",
+"Both involve uncredited risk-taking with personal health to care for another person."
+],
+[
+"What is the main purpose of applying literary themes to modern real-world contexts?",
+"It demonstrates that core thematic forces operate beyond the original historical short story."
+],
+[
+"The diagnostic connection between an external object and recovery illustrates the _____ link in literature.",
+"mind-body"
+],
+[
+"In the candle decoding example, the twist reveals that the light was a deliberate, costly act of _____ care.",
+"unseen"
+],
+[
+"In O. Henry's structural mechanics, withholding a key fact allows a story to achieve retroactive _____.",
+"reversal"
+],
+[
+"In Bloom's L3 framework, applying a technique requires running the same procedure on an _____ example.",
+"unfamiliar"
+],
+[
+"In the four-step symbolism template, comparing literal objects to larger human values reveals the symbol's _____ significance.",
+"underlying"
+],
+[
+"What outcome shows that a schoolteacher's flood-relief work matches Behrman's narrative pattern?",
+"The teacher contracts an illness due to exposure during the crisis work."
+],
+[
+"What type of irony occurs when expectations are reversed by an unseen, selfless act?",
+"Situational irony occurs in this scenario."
+],
+[
+"What shared motive drives both the volunteer nurse and Behrman to endanger their personal health?",
+"A commitment to self-sacrifice for the survival and care of others drives both."
+],
+[
+"What belief in the candle scenario directly mirrors Johnsy's belief about the leaf falling?",
+"The belief that an external signal extinguishing marks imminent death or loss."
+],
+[
+"How does manipulating an external sign restore willpower in an anxious patient?",
+"It alters the external trigger that the patient linked to their physical survival."
+],
+[
+"What component of O. Henry's twist structure forces the reader to re-evaluate preceding events?",
+"The final reveal of the withheld key fact forces the re-evaluation."
+],
+[
+"What analytical concept explains why sports clinic patients heal faster when targeting a specific goal?",
+"The mind-body link between willpower and physical recovery explains this outcome."
+],
+[
+"In the character analysis template, step 2 focuses on identifying the physical or _____ effect of a belief.",
+"behavioural"
+],
+[
+"In the symbolism decoding procedure, step 4 assesses how the narrative _____ alters the symbol's meaning.",
+"ending"
+],
+[
+"What role does Sue play in relation to Johnsy's external sign intervention?",
+"She acts as an intervener attempting to manipulate or manage the external sign."
+],
+[
+"Why is Behrman described as undergoing a sacrifice-arc in literary analysis?",
+"He achieves his life purpose through a single, costly act after years without visible success."
+],
+[
+"What core learning objective is targeted by Bloom's Taxonomy Level 3 (Apply)?",
+"Transferring diagnostic tools and patterns to analyze new, unstudied scenarios."
+]
+];
+
+(function () {
+  let order = DATA.map((_, i) => i);
+  let idx = 0;
+
+  const card = document.getElementById('card');
+  const qText = document.getElementById('qText');
+  const aText = document.getElementById('aText');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const shuffleBtn = document.getElementById('shuffleBtn');
+  const fill = document.getElementById('progressFill');
+  const label = document.getElementById('progressLabel');
+  const faces = card.querySelectorAll('.face');
+
+  function fmt(s) {
+    // Escape HTML, then show *text* as italics
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
+  }
+
+  function render() {
+    // Reset to the question side instantly so the next answer is never revealed mid-flip
+    card.classList.add('no-anim');
+    card.classList.remove('flipped');
+    const pair = DATA[order[idx]];
+    qText.innerHTML = fmt(pair[0]);
+    aText.innerHTML = fmt(pair[1]);
+    faces.forEach(f => { f.scrollTop = 0; });
+    void card.offsetWidth;
+    card.classList.remove('no-anim');
+
+    const total = DATA.length;
+    label.textContent = (idx + 1) + ' / ' + total;
+    fill.style.width = ((idx + 1) / total * 100) + '%';
+    prevBtn.disabled = idx === 0;
+    nextBtn.disabled = idx === total - 1;
+  }
+
+  function flip() { card.classList.toggle('flipped'); }
+  function prev() { if (idx > 0) { idx--; render(); } }
+  function next() { if (idx < DATA.length - 1) { idx++; render(); } }
+  function shuffle() {
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    idx = 0;
+    render();
+  }
+
+  card.addEventListener('click', flip);
+  prevBtn.addEventListener('click', function () { prev(); this.blur(); });
+  nextBtn.addEventListener('click', function () { next(); this.blur(); });
+  shuffleBtn.addEventListener('click', function () { shuffle(); this.blur(); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
+    else if (e.key === ' ' || e.code === 'Space') { e.preventDefault(); flip(); }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

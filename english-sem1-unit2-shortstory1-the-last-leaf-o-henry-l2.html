@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Last Leaf - O. Henry | Flashcards - L2</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: #f6f3ee;
+    color: #1a2332;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2.5rem 1rem 2rem;
+  }
+  .app { width: 100%; max-width: 560px; }
+  header { text-align: center; margin-bottom: 1.75rem; }
+  h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: normal;
+    font-size: 1.45rem;
+    line-height: 1.3;
+    color: #1a2332;
+    margin: 0 0 0.4rem;
+  }
+  .subtitle { font-size: 0.9rem; color: #6b7280; margin: 0; }
+
+  .progress { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+  .progress-track {
+    flex: 1;
+    height: 4px;
+    background: #e4ddd2;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0;
+    background: #2d5a7b;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+  .progress-label {
+    font-size: 0.85rem;
+    color: #6b7280;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .scene { perspective: 1200px; width: 100%; max-width: 560px; height: 320px; }
+  .card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 12px;
+    outline: none;
+  }
+  .card.flipped { transform: rotateY(180deg); }
+  .card.no-anim, .card.no-anim .face { transition: none !important; }
+  .card:focus-visible .face { box-shadow: 0 0 0 3px rgba(45,90,123,0.35), 0 2px 20px rgba(26,35,50,0.08); }
+
+  .face {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    box-shadow: 0 2px 20px rgba(26,35,50,0.08);
+    padding: 2rem 2.25rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  .front {
+    background: #ffffff;
+    border: 1px solid #d6cfc4;
+    transform: rotateY(0deg);
+  }
+  .back {
+    background: #2d5a7b;
+    color: #f0f6fa;
+    transform: rotateY(180deg);
+    visibility: hidden;
+    transition: visibility 0s 0.25s;
+  }
+  .card.flipped .back { visibility: visible; }
+  .card.flipped .front { visibility: hidden; transition: visibility 0s 0.25s; }
+
+  .label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #8a8275;
+    flex-shrink: 0;
+  }
+  .back .label { color: rgba(240,246,250,0.65); }
+  .text {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin: auto 0;
+    padding: 1rem 0;
+    white-space: pre-line;
+    overflow-wrap: break-word;
+  }
+  .hint {
+    font-size: 0.8rem;
+    color: #8a8275;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+  button {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.92rem;
+    border-radius: 8px;
+    padding: 0.65rem 1.25rem;
+    cursor: pointer;
+    transition: background 0.2s ease, opacity 0.2s ease;
+  }
+  button:focus-visible { outline: 3px solid rgba(45,90,123,0.35); outline-offset: 2px; }
+  .nav-btn {
+    background: #2d5a7b;
+    color: #ffffff;
+    border: 1px solid #2d5a7b;
+    min-width: 6.5rem;
+  }
+  .nav-btn:hover:not(:disabled) { background: #244a66; }
+  .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .shuffle-btn {
+    background: transparent;
+    color: #2d5a7b;
+    border: 1.5px dashed #2d5a7b;
+  }
+  .shuffle-btn:hover { background: rgba(45,90,123,0.06); }
+
+  .kbd-hint {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #8a8275;
+    margin-top: 1.25rem;
+  }
+  kbd {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.75rem;
+    background: #ffffff;
+    border: 1px solid #d6cfc4;
+    border-radius: 4px;
+    padding: 0.1rem 0.4rem;
+  }
+
+  @media (max-width: 480px) {
+    body { padding: 1.75rem 0.85rem 1.5rem; }
+    h1 { font-size: 1.25rem; }
+    .scene { height: 290px; }
+    .face { padding: 1.5rem 1.25rem; }
+    .text { font-size: 1rem; }
+    .kbd-hint { display: none; }
+    .nav-btn { min-width: 5.5rem; padding: 0.65rem 1rem; }
+    .shuffle-btn { padding: 0.65rem 0.9rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card, .progress-fill { transition: none; }
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <header>
+    <h1>The Last Leaf - O. Henry | Flashcards - L2</h1>
+    <p class="subtitle">O. Henry · 52 Flashcards</p>
+  </header>
+
+  <div class="progress" aria-hidden="true">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <span class="progress-label" id="progressLabel">1 / 1</span>
+  </div>
+
+  <div class="scene">
+    <div class="card" id="card" role="button" tabindex="0" aria-live="polite" aria-label="Flashcard. Activate to flip.">
+      <div class="face front">
+        <div class="label">Question</div>
+        <div class="text" id="qText"></div>
+        <div class="hint">Tap to reveal answer</div>
+      </div>
+      <div class="face back">
+        <div class="label">Answer</div>
+        <div class="text" id="aText"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="nav-btn" id="prevBtn" type="button">&larr; Prev</button>
+    <button class="shuffle-btn" id="shuffleBtn" type="button">Shuffle</button>
+    <button class="nav-btn" id="nextBtn" type="button">Next &rarr;</button>
+  </div>
+
+  <div class="kbd-hint"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> to navigate &nbsp;&middot;&nbsp; <kbd>Space</kbd> to flip</div>
+</main>
+
+<script>
+const DATA = [
+[
+"What was the real name of the author who wrote under the pen name O. Henry?",
+"O. Henry's real name was William Sydney Porter."
+],
+[
+"Which signature literary technique characterises the short stories of O. Henry?",
+"O. Henry is renowned for employing surprise or twist endings."
+],
+[
+"How does O. Henry's twist-ending style affect the reader's interpretation of earlier narrative events?",
+"It provides an unexpected final revelation that fundamentally alters how earlier events are understood in hindsight."
+],
+[
+"In which New York neighbourhood is O. Henry's short story \"The Last Leaf\" set?",
+"The story is set in Greenwich Village, an artists' neighbourhood in New York."
+],
+[
+"Why was Greenwich Village popular among painters in the context of \"The Last Leaf\"?",
+"Its narrow, oddly-angled streets provided cheap lodgings that attracted struggling artists."
+],
+[
+"How does the setting of Greenwich Village contribute to the narrative structure of \"The Last Leaf\"?",
+"It brings the three main struggling artist characters into close physical proximity."
+],
+[
+"In O. Henry's \"The Last Leaf\", pneumonia is personified as a cold, invisible stranger named _____.",
+"Mr. Pneumonia"
+],
+[
+"What literary purpose does personifying pneumonia as \"Mr. Pneumonia\" serve in the narrative?",
+"It transforms an impersonal medical illness into a deliberate villain stalking the district."
+],
+[
+"Who is Johnsy in O. Henry's short story \"The Last Leaf\"?",
+"Johnsy is a young painter living in Greenwich Village who falls dangerously ill with pneumonia."
+],
+[
+"What fatalistic belief does Johnsy adopt regarding the ivy vine outside her window?",
+"She believes she will die the exact moment the final leaf falls from the vine."
+],
+[
+"Is there any medical rationale for Johnsy connecting her survival to the falling ivy leaves?",
+"No, her belief is entirely fatalistic and lacks any medical basis."
+],
+[
+"What role does Sue play in Johnsy's life during her illness?",
+"Sue is Johnsy's caring friend and roommate who nurses her and seeks assistance."
+],
+[
+"Who is Behrman in O. Henry's short story \"The Last Leaf\"?",
+"Behrman is an elderly, unsuccessful painter living downstairs who has promised for decades to paint a masterpiece."
+],
+[
+"What constitutes the first major movement of the plot in \"The Last Leaf\"?",
+"Johnsy's physical decline from pneumonia and her fatalistic belief linked to the falling leaves."
+],
+[
+"What event occurs during the storm night that marks the second movement of the story's plot?",
+"A single leaf remains on the ivy vine despite a severe storm, giving Johnsy the will to recover."
+],
+[
+"What key discovery forms the third movement of the plot in \"The Last Leaf\"?",
+"The revelation that Behrman painted a leaf on the wall during the storm, sacrificing his life so Johnsy would survive."
+],
+[
+"How do the surface events of \"The Last Leaf\" differ from the actual driving force of the plot?",
+"The surface plot depicts a leaf refusing to fall, whereas the true driver is Behrman's quiet act of sacrifice off-page."
+],
+[
+"Where do the pivotal events driving the true plot of \"The Last Leaf\" occur?",
+"The pivotal events occur off-page, where Behrman secretly paints the leaf during an icy storm."
+],
+[
+"What danger does Johnsy's character represent in the thematic framework of the story?",
+"She represents the danger of surrendering hope and letting a negative mental state undermine physical survival."
+],
+[
+"According to the doctor in \"The Last Leaf\", upon what key factor does Johnsy's medical recovery depend?",
+"Her recovery depends directly on whether she actually wants to get well."
+],
+[
+"How does Johnsy view her former desire to die after she sees the last leaf withstand the storm?",
+"She reinterprets her passivity as \"a bad girl\" behaviour for wishing to die."
+],
+[
+"What psychological shift in Johnsy immediately precedes her physical recovery?",
+"A shift from passive despair to a renewed will to live."
+],
+[
+"How is Behrman portrayed throughout most of the story before the final twist?",
+"He is portrayed as a bitter, failed, hard-drinking old painter who talks of a masterpiece he never starts."
+],
+[
+"What do Behrman's angry outbursts against Johnsy's belief actually disguise?",
+"His outbursts disguise his protective love and deep concern for Johnsy's survival."
+],
+[
+"How are Behrman's forty years of artistic failure redeemed in the narrative?",
+"They are redeemed in a single night through his selfless act of painting the leaf to save Johnsy."
+],
+[
+"How does the final revelation reframe old Behrman's character?",
+"It transforms him from a comic, wasted failure into the story's true hero."
+],
+[
+"How does Sue function as a bridge character within the story?",
+"Sue connects Johnsy's emotional despair to Behrman's sacrifice by nursing Johnsy and fetching Behrman."
+],
+[
+"Which character delivers the story's final revelation to Johnsy?",
+"Sue delivers the final revelation about Behrman and the painted leaf."
+],
+[
+"In \"The Last Leaf\", the falling ivy leaves directly symbolise _____.",
+"Johnsy's fading hope and approaching death"
+],
+[
+"What does the persistent, unfallen leaf symbolise to Johnsy during her illness?",
+"It symbolises the fragile line between life and death and the power of persistent hope."
+],
+[
+"What does Behrman's painted leaf represent in terms of artistic achievement?",
+"It represents his long-promised masterpiece, defined by selfless love rather than technical gallery perfection."
+],
+[
+"How does O. Henry redefine what constitutes a true \"masterpiece\" in \"The Last Leaf\"?",
+"He redefines a masterpiece as an act of love and self-sacrifice disguised as art, achieved at the cost of the painter's life."
+],
+[
+"How does O. Henry execute the twist ending at the conclusion of \"The Last Leaf\"?",
+"He withholds the fact that Behrman painted the leaf until the final paragraph."
+],
+[
+"What false assumption do Sue, Johnsy, and the reader share until the end of the story?",
+"They assume that the leaf clinging to the wall outside the window is a natural, surviving ivy leaf."
+],
+[
+"How does knowing the twist ending alter the reader's understanding of Behrman being found wet and cold?",
+"It clarifies that Behrman spent the freezing storm night outside painting the leaf on the wall."
+],
+[
+"What situational irony exists regarding Behrman's long-delayed masterpiece?",
+"He creates his greatest artistic masterpiece at the exact moment his own death becomes assured."
+],
+[
+"What situational irony occurs between the fates of Johnsy and Behrman?",
+"The young woman who wished to die is saved, while the old man who saved her dies as a result of his action."
+],
+[
+"How does the narrative reverse expectations concerning spoken intentions versus actions?",
+"The man who endlessly talked of achieving greatness never did so deliberately, yet his quiet, heroic action created a masterpiece."
+],
+[
+"What underlying message does \"The Last Leaf\" convey regarding hope?",
+"It demonstrates that even a small, fragile symbol of hope can restore a person's will to live."
+],
+[
+"According to the thematic analysis of \"The Last Leaf\", how does despair compare to physical illness?",
+"Losing hope and giving up mental resolve are depicted as being just as dangerous to survival as physical illness."
+],
+[
+"What core moral virtue is demonstrated through Behrman's final action?",
+"Self-sacrifice performed without seeking credit or public acclaim."
+],
+[
+"How do Sue and Behrman demonstrate the theme of true friendship?",
+"They demonstrate friendship through practical devotion and selfless actions rather than empty praise."
+],
+[
+"What relationship between mind and body is emphasised by the doctor's assessment of Johnsy?",
+"A patient's mental outlook and desire to live directly influence their physical recovery."
+],
+[
+"What thematic statement does O. Henry make about ordinary, flawed human beings?",
+"He argues that ordinary and seemingly failed individuals are capable of profound, quiet heroism."
+],
+[
+"Cloze: O. Henry's real name was William Sydney _____.",
+"Porter"
+],
+[
+"Cloze: The setting of Greenwich Village is depicted as an artists' neighbourhood in _____ City.",
+"New York"
+],
+[
+"Concept: Twist Ending in O. Henry's Fiction",
+"Definition: A narrative technique that builds quietly toward an unexpected final revelation, recontextualising earlier story events in hindsight."
+],
+[
+"Concept: Personification of Illness in \"The Last Leaf\"",
+"Definition: The literary attribution of human motives to a disease, representing pneumonia as \"Mr. Pneumonia\", a cold stranger stalking vulnerable artists."
+],
+[
+"What physical creation saves Johnsy's life during the icy storm?",
+"A painted ivy leaf applied directly to the wall outside Johnsy's window."
+],
+[
+"What direct cause leads to Behrman contracting fatal pneumonia?",
+"He goes out into the freezing rain and storm to paint the ivy leaf on the exterior wall."
+],
+[
+"How many years had Behrman spoken of painting a masterpiece before creating the painted leaf?",
+"He had spoken of painting a masterpiece for decades."
+],
+[
+"Why is Sue's final speech to Johnsy structurally essential to the story's resolution?",
+"It provides the missing explanation that resolves the mystery of the unfallen leaf and reveals Behrman's ultimate sacrifice."
+]
+];
+
+(function () {
+  let order = DATA.map((_, i) => i);
+  let idx = 0;
+
+  const card = document.getElementById('card');
+  const qText = document.getElementById('qText');
+  const aText = document.getElementById('aText');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const shuffleBtn = document.getElementById('shuffleBtn');
+  const fill = document.getElementById('progressFill');
+  const label = document.getElementById('progressLabel');
+  const faces = card.querySelectorAll('.face');
+
+  function fmt(s) {
+    // Escape HTML, then show *text* as italics
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
+  }
+
+  function render() {
+    // Reset to the question side instantly so the next answer is never revealed mid-flip
+    card.classList.add('no-anim');
+    card.classList.remove('flipped');
+    const pair = DATA[order[idx]];
+    qText.innerHTML = fmt(pair[0]);
+    aText.innerHTML = fmt(pair[1]);
+    faces.forEach(f => { f.scrollTop = 0; });
+    void card.offsetWidth;
+    card.classList.remove('no-anim');
+
+    const total = DATA.length;
+    label.textContent = (idx + 1) + ' / ' + total;
+    fill.style.width = ((idx + 1) / total * 100) + '%';
+    prevBtn.disabled = idx === 0;
+    nextBtn.disabled = idx === total - 1;
+  }
+
+  function flip() { card.classList.toggle('flipped'); }
+  function prev() { if (idx > 0) { idx--; render(); } }
+  function next() { if (idx < DATA.length - 1) { idx++; render(); } }
+  function shuffle() {
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    idx = 0;
+    render();
+  }
+
+  card.addEventListener('click', flip);
+  prevBtn.addEventListener('click', function () { prev(); this.blur(); });
+  nextBtn.addEventListener('click', function () { next(); this.blur(); });
+  shuffleBtn.addEventListener('click', function () { shuffle(); this.blur(); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
+    else if (e.key === ' ' || e.code === 'Space') { e.preventDefault(); flip(); }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
