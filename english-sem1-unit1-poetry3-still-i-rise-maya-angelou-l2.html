@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Still I Rise - Maya Angelou | Flashcards - L2</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: #f6f3ee;
+    color: #1a2332;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2.5rem 1rem 2rem;
+  }
+  .app { width: 100%; max-width: 560px; }
+  header { text-align: center; margin-bottom: 1.75rem; }
+  h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: normal;
+    font-size: 1.45rem;
+    line-height: 1.3;
+    color: #1a2332;
+    margin: 0 0 0.4rem;
+  }
+  .subtitle { font-size: 0.9rem; color: #6b7280; margin: 0; }
+
+  .progress { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+  .progress-track {
+    flex: 1;
+    height: 4px;
+    background: #e4ddd2;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0;
+    background: #2d5a7b;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+  .progress-label {
+    font-size: 0.85rem;
+    color: #6b7280;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .scene { perspective: 1200px; width: 100%; max-width: 560px; height: 320px; }
+  .card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 12px;
+    outline: none;
+  }
+  .card.flipped { transform: rotateY(180deg); }
+  .card.no-anim, .card.no-anim .face { transition: none !important; }
+  .card:focus-visible .face { box-shadow: 0 0 0 3px rgba(45,90,123,0.35), 0 2px 20px rgba(26,35,50,0.08); }
+
+  .face {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    box-shadow: 0 2px 20px rgba(26,35,50,0.08);
+    padding: 2rem 2.25rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  .front {
+    background: #ffffff;
+    border: 1px solid #d6cfc4;
+    transform: rotateY(0deg);
+  }
+  .back {
+    background: #2d5a7b;
+    color: #f0f6fa;
+    transform: rotateY(180deg);
+    visibility: hidden;
+    transition: visibility 0s 0.25s;
+  }
+  .card.flipped .back { visibility: visible; }
+  .card.flipped .front { visibility: hidden; transition: visibility 0s 0.25s; }
+
+  .label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #8a8275;
+    flex-shrink: 0;
+  }
+  .back .label { color: rgba(240,246,250,0.65); }
+  .text {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin: auto 0;
+    padding: 1rem 0;
+    white-space: pre-line;
+    overflow-wrap: break-word;
+  }
+  .hint {
+    font-size: 0.8rem;
+    color: #8a8275;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+  button {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.92rem;
+    border-radius: 8px;
+    padding: 0.65rem 1.25rem;
+    cursor: pointer;
+    transition: background 0.2s ease, opacity 0.2s ease;
+  }
+  button:focus-visible { outline: 3px solid rgba(45,90,123,0.35); outline-offset: 2px; }
+  .nav-btn {
+    background: #2d5a7b;
+    color: #ffffff;
+    border: 1px solid #2d5a7b;
+    min-width: 6.5rem;
+  }
+  .nav-btn:hover:not(:disabled) { background: #244a66; }
+  .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .shuffle-btn {
+    background: transparent;
+    color: #2d5a7b;
+    border: 1.5px dashed #2d5a7b;
+  }
+  .shuffle-btn:hover { background: rgba(45,90,123,0.06); }
+
+  .kbd-hint {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #8a8275;
+    margin-top: 1.25rem;
+  }
+  kbd {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.75rem;
+    background: #ffffff;
+    border: 1px solid #d6cfc4;
+    border-radius: 4px;
+    padding: 0.1rem 0.4rem;
+  }
+
+  @media (max-width: 480px) {
+    body { padding: 1.75rem 0.85rem 1.5rem; }
+    h1 { font-size: 1.25rem; }
+    .scene { height: 290px; }
+    .face { padding: 1.5rem 1.25rem; }
+    .text { font-size: 1rem; }
+    .kbd-hint { display: none; }
+    .nav-btn { min-width: 5.5rem; padding: 0.65rem 1rem; }
+    .shuffle-btn { padding: 0.65rem 0.9rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card, .progress-fill { transition: none; }
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <header>
+    <h1>Still I Rise - Maya Angelou | Flashcards - L2</h1>
+    <p class="subtitle">Maya Angelou · 55 Flashcards</p>
+  </header>
+
+  <div class="progress" aria-hidden="true">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <span class="progress-label" id="progressLabel">1 / 1</span>
+  </div>
+
+  <div class="scene">
+    <div class="card" id="card" role="button" tabindex="0" aria-live="polite" aria-label="Flashcard. Activate to flip.">
+      <div class="face front">
+        <div class="label">Question</div>
+        <div class="text" id="qText"></div>
+        <div class="hint">Tap to reveal answer</div>
+      </div>
+      <div class="face back">
+        <div class="label">Answer</div>
+        <div class="text" id="aText"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="nav-btn" id="prevBtn" type="button">&larr; Prev</button>
+    <button class="shuffle-btn" id="shuffleBtn" type="button">Shuffle</button>
+    <button class="nav-btn" id="nextBtn" type="button">Next &rarr;</button>
+  </div>
+
+  <div class="kbd-hint"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> to navigate &nbsp;&middot;&nbsp; <kbd>Space</kbd> to flip</div>
+</main>
+
+<script>
+const DATA = [
+[
+"How did Maya Angelou's personal history influence the tone of 'Still I Rise'?",
+"Her survival of childhood trauma and diverse work experience shaped the poem's confidence and defiance."
+],
+[
+"What was the significance of Maya Angelou's period of silence following childhood trauma?",
+"It contributed to her firsthand experience of needing to reclaim her own voice."
+],
+[
+"In what year was the poem 'Still I Rise' published?",
+"1978"
+],
+[
+"How did the success of 'I Know Why the Caged Bird Sings' affect the tone of 'Still I Rise'?",
+"It allowed Angelou to write from the perspective of an internationally established author who had already proven her resilience."
+],
+[
+"Describe the context of 'Still I Rise' in one line regarding the author's life.",
+"It is a victory speech written by someone who had already survived the hardest parts of her own story."
+],
+[
+"Instead of repeating the same idea, the six stanzas of 'Still I Rise' function as an _____.",
+"Escalating argument."
+],
+[
+"What is the core claim established in the first stanza of the poem?",
+"The speaker will rise like dust regardless of what is done to her."
+],
+[
+"Which two reasons for confidence are added in stanzas two and three?",
+"The speaker's own attitude and nature's unstoppable certainty."
+],
+[
+"What is the specific purpose of the fourth stanza in 'Still I Rise'?",
+"It imagines the defeat her critics wanted to see only to reject that image outright."
+],
+[
+"How does the fifth stanza escalate the stakes of the poem's argument?",
+"It moves from responding to words to addressing more serious physical harm."
+],
+[
+"In which stanza does the poem shift from personal defiance to a collective, historical struggle?",
+"Stanza six."
+],
+[
+"Whose 'unmet hopes' does the speaker carry in the final stanza?",
+"Her ancestors'."
+],
+[
+"Why does the fourth stanza feel structurally different from the others?",
+"It briefly imagines defeat as a rhetorical device before rejecting it."
+],
+[
+"Why are metaphors like 'dust' and 'air' effective in describing resilience?",
+"They represent things that are physically impossible to hold down permanently."
+],
+[
+"How do natural metaphors like 'dust' change the perception of the speaker's resilience?",
+"They make her ability to rise feel like a law of nature rather than a personal boast."
+],
+[
+"What is the poetic effect of repeating the word 'rise' three times at the end of the poem?",
+"It creates a rhythmic, chant-like quality that mimics the physical act of getting up."
+],
+[
+"Define the term for the repetition of 'You may...' at the beginning of various lines in the poem.",
+"Anaphora."
+],
+[
+"How does the anaphora of 'You may...' affect the portrayal of the speaker's critics?",
+"It makes their various attacks seem repetitive and ultimately powerless."
+],
+[
+"Metaphor: Dust/Air",
+"Definition: Symbols of natural resilience that suggest the speaker's rise is inevitable."
+],
+[
+"How do the three themes of 'Still I Rise' relate to one another?",
+"They work as one continuous, reinforcing argument rather than separate ideas."
+],
+[
+"In the context of the poem's themes, what does 'Oppression' provide?",
+"The specific challenge involving lies, insults, and hatred that the speaker must respond to."
+],
+[
+"How does 'Racial Identity' contribute to the speaker's strength in the poem?",
+"It frames her personal rise as the fulfilment of her ancestors' unmet hopes."
+],
+[
+"In what way is 'Female Empowerment' expressed in 'Still I Rise'?",
+"Through embodied confidence and physical pride, such as sassiness and posture."
+],
+[
+"Why is the speaker's resistance described as 'not abstract'?",
+"It is rooted in personal, physical pride and specific imagery like oil wells."
+],
+[
+"Summarise the connection between the poem's themes in a single sentence.",
+"The speaker's confidence is personal, but her strength is inherited."
+],
+[
+"How does Blakeâ€™s 'The Chimney Sweeper' differ from 'Still I Rise' in its approach to injustice?",
+"It uses a child's unaware voice to evoke pity, whereas 'Still I Rise' uses a confident voice to declare victory."
+],
+[
+"What role does the reader play in William Blake's 'The Chimney Sweeper'?",
+"The reader must perform the moral work of recognising injustice that the child narrator cannot."
+],
+[
+"How does Ramanujanâ€™s 'Ecology' handle central difficulties compared to Angelou's poem?",
+"It describes a trade-off without judgement, while Angelou directly confronts her critics."
+],
+[
+"Which of the three poems in the unit is the most directly confrontational?",
+"'Still I Rise'."
+],
+[
+"Summarise the speaker's relationship to the reader in 'The Chimney Sweeper'.",
+"'Pity me'."
+],
+[
+"Summarise the speaker's relationship to the reader in 'Ecology'.",
+"'Accept the trade-off'."
+],
+[
+"Summarise the speaker's relationship to the reader in 'Still I Rise'.",
+"'Watch me win'."
+],
+[
+"How does the speaker's posture relate to the theme of female empowerment?",
+"It provides a personal, embodied form of resistance against being shaken."
+],
+[
+"In 'Still I Rise', resilience is framed as natural and _____.",
+"Inevitable."
+],
+[
+"What was Maya Angelou's professional status when she published 'Still I Rise'?",
+"She was an internationally established poet, memoirist, and civil rights activist."
+],
+[
+"How does the grammar of the anaphora 'You may...' strengthen the poem?",
+"It shows that every different method of attack receives the same unmoved response."
+],
+[
+"In 'Still I Rise', the speaker moves from personal claim to _____.",
+"Collective meaning."
+],
+[
+"What does the imagery of 'oil wells' represent in the context of the poem's themes?",
+"Female empowerment and personal, embodied confidence."
+],
+[
+"Why is 'Still I Rise' described as a victory speech rather than a performance?",
+"The speaker's confidence is earned through her real-life survival of trauma and hardship."
+],
+[
+"Which poem in the unit leaves the final conclusion entirely to the reader?",
+"'Ecology' by Ramanujan."
+],
+[
+"What is the primary difference in the 'voice' used by Blake and Angelou?",
+"Blake uses an unaware child's voice, while Angelou uses a self-assured adult voice."
+],
+[
+"How does the first stanza's metaphor of 'dust' establish the speaker's resilience?",
+"It suggests she will rise regardless of how she is treated or 'trodden' upon."
+],
+[
+"In stanzas 2-3, what does 'nature's own certainty' represent?",
+"The unstoppable and predictable nature of the speaker's own confidence."
+],
+[
+"What is the structural effect of the poem's escalating argument?",
+"It builds momentum toward a shared historical struggle rather than just repeating one idea."
+],
+[
+"How does racial identity explain the high stakes of the poem's resistance?",
+"The speaker is carrying the hopes and history of her ancestors."
+],
+[
+"Why is the rhythmic quality of 'Still I Rise' compared to a chant?",
+"The repetition of the word 'rise' at the end creates a steady, persistent beat."
+],
+[
+"Concept: Embodied Resistance",
+"Definition: Resistance that is expressed through physical presence and pride rather than abstract concepts."
+],
+[
+"How does the speaker respond to the 'lies' mentioned in the theme of oppression?",
+"She rejects them through personal confidence and an unshaken posture."
+],
+[
+"What is the significance of the poem being published 'midway' through Angelou's career?",
+"It reflects a writer who had already proven her resilience over decades of activism and writing."
+],
+[
+"Which poetic device makes the critics' efforts seem 'repetitive and ultimately powerless'?",
+"Anaphora."
+],
+[
+"What does the speaker mean by 'nature's own certainty' in the context of rising?",
+"Her resilience is as predictable and unstoppable as the tides or the sun."
+],
+[
+"How does 'Still I Rise' handle the 'central difficulty' of the poem?",
+"By directly confronting oppression and declaring victory in a confident voice."
+],
+[
+"In 'The Chimney Sweeper', who must recognise the injustice portrayed?",
+"The reader."
+],
+[
+"Which theme links personal confidence to the cultural memory of ancestors?",
+"Racial Identity."
+],
+[
+"How does the poem transition in its final stanza?",
+"It moves outward from the personal 'I' to the shared experience of a people."
+]
+];
+
+(function () {
+  let order = DATA.map((_, i) => i);
+  let idx = 0;
+
+  const card = document.getElementById('card');
+  const qText = document.getElementById('qText');
+  const aText = document.getElementById('aText');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const shuffleBtn = document.getElementById('shuffleBtn');
+  const fill = document.getElementById('progressFill');
+  const label = document.getElementById('progressLabel');
+  const faces = card.querySelectorAll('.face');
+
+  function render() {
+    // Reset to the question side instantly so the next answer is never revealed mid-flip
+    card.classList.add('no-anim');
+    card.classList.remove('flipped');
+    const pair = DATA[order[idx]];
+    qText.textContent = pair[0];
+    aText.textContent = pair[1];
+    faces.forEach(f => { f.scrollTop = 0; });
+    void card.offsetWidth;
+    card.classList.remove('no-anim');
+
+    const total = DATA.length;
+    label.textContent = (idx + 1) + ' / ' + total;
+    fill.style.width = ((idx + 1) / total * 100) + '%';
+    prevBtn.disabled = idx === 0;
+    nextBtn.disabled = idx === total - 1;
+  }
+
+  function flip() { card.classList.toggle('flipped'); }
+  function prev() { if (idx > 0) { idx--; render(); } }
+  function next() { if (idx < DATA.length - 1) { idx++; render(); } }
+  function shuffle() {
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    idx = 0;
+    render();
+  }
+
+  card.addEventListener('click', flip);
+  prevBtn.addEventListener('click', function () { prev(); this.blur(); });
+  nextBtn.addEventListener('click', function () { next(); this.blur(); });
+  shuffleBtn.addEventListener('click', function () { shuffle(); this.blur(); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
+    else if (e.key === ' ' || e.code === 'Space') { e.preventDefault(); flip(); }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
