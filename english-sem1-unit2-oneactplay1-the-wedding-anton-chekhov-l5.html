@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Wedding - Anton Chekhov | Flashcards - L5</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: #f6f3ee;
+    color: #1a2332;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2.5rem 1rem 2rem;
+  }
+  .app { width: 100%; max-width: 560px; }
+  header { text-align: center; margin-bottom: 1.75rem; }
+  h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: normal;
+    font-size: 1.45rem;
+    line-height: 1.3;
+    color: #1a2332;
+    margin: 0 0 0.4rem;
+  }
+  .subtitle { font-size: 0.9rem; color: #6b7280; margin: 0; }
+
+  .progress { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+  .progress-track {
+    flex: 1;
+    height: 4px;
+    background: #e4ddd2;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0;
+    background: #2d5a7b;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+  .progress-label {
+    font-size: 0.85rem;
+    color: #6b7280;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .scene { perspective: 1200px; width: 100%; max-width: 560px; height: 320px; }
+  .card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 12px;
+    outline: none;
+  }
+  .card.flipped { transform: rotateY(180deg); }
+  .card.no-anim, .card.no-anim .face { transition: none !important; }
+  .card:focus-visible .face { box-shadow: 0 0 0 3px rgba(45,90,123,0.35), 0 2px 20px rgba(26,35,50,0.08); }
+
+  .face {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    box-shadow: 0 2px 20px rgba(26,35,50,0.08);
+    padding: 2rem 2.25rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  .front {
+    background: #ffffff;
+    border: 1px solid #d6cfc4;
+    transform: rotateY(0deg);
+  }
+  .back {
+    background: #2d5a7b;
+    color: #f0f6fa;
+    transform: rotateY(180deg);
+    visibility: hidden;
+    transition: visibility 0s 0.25s;
+  }
+  .card.flipped .back { visibility: visible; }
+  .card.flipped .front { visibility: hidden; transition: visibility 0s 0.25s; }
+
+  .label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #8a8275;
+    flex-shrink: 0;
+  }
+  .back .label { color: rgba(240,246,250,0.65); }
+  .text {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin: auto 0;
+    padding: 1rem 0;
+    white-space: pre-line;
+    overflow-wrap: break-word;
+  }
+  .hint {
+    font-size: 0.8rem;
+    color: #8a8275;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+  button {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.92rem;
+    border-radius: 8px;
+    padding: 0.65rem 1.25rem;
+    cursor: pointer;
+    transition: background 0.2s ease, opacity 0.2s ease;
+  }
+  button:focus-visible { outline: 3px solid rgba(45,90,123,0.35); outline-offset: 2px; }
+  .nav-btn {
+    background: #2d5a7b;
+    color: #ffffff;
+    border: 1px solid #2d5a7b;
+    min-width: 6.5rem;
+  }
+  .nav-btn:hover:not(:disabled) { background: #244a66; }
+  .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .shuffle-btn {
+    background: transparent;
+    color: #2d5a7b;
+    border: 1.5px dashed #2d5a7b;
+  }
+  .shuffle-btn:hover { background: rgba(45,90,123,0.06); }
+
+  .kbd-hint {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #8a8275;
+    margin-top: 1.25rem;
+  }
+  kbd {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.75rem;
+    background: #ffffff;
+    border: 1px solid #d6cfc4;
+    border-radius: 4px;
+    padding: 0.1rem 0.4rem;
+  }
+
+  @media (max-width: 480px) {
+    body { padding: 1.75rem 0.85rem 1.5rem; }
+    h1 { font-size: 1.25rem; }
+    .scene { height: 290px; }
+    .face { padding: 1.5rem 1.25rem; }
+    .text { font-size: 1rem; }
+    .kbd-hint { display: none; }
+    .nav-btn { min-width: 5.5rem; padding: 0.65rem 1rem; }
+    .shuffle-btn { padding: 0.65rem 0.9rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card, .progress-fill { transition: none; }
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <header>
+    <h1>The Wedding - Anton Chekhov | Flashcards - L5</h1>
+    <p class="subtitle">Anton Chekhov · 50 Flashcards</p>
+  </header>
+
+  <div class="progress" aria-hidden="true">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <span class="progress-label" id="progressLabel">1 / 1</span>
+  </div>
+
+  <div class="scene">
+    <div class="card" id="card" role="button" tabindex="0" aria-live="polite" aria-label="Flashcard. Activate to flip.">
+      <div class="face front">
+        <div class="label">Question</div>
+        <div class="text" id="qText"></div>
+        <div class="hint">Tap to reveal answer</div>
+      </div>
+      <div class="face back">
+        <div class="label">Answer</div>
+        <div class="text" id="aText"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="nav-btn" id="prevBtn" type="button">&larr; Prev</button>
+    <button class="shuffle-btn" id="shuffleBtn" type="button">Shuffle</button>
+    <button class="nav-btn" id="nextBtn" type="button">Next &rarr;</button>
+  </div>
+
+  <div class="kbd-hint"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> to navigate &nbsp;&middot;&nbsp; <kbd>Space</kbd> to flip</div>
+</main>
+
+<script>
+const DATA = [
+[
+"What makes the 25-rouble transaction in *The Wedding* a particularly effective critique of social climbing?",
+"It represents a concrete, measurable purchase of prestige that cannot be dismissed as a mere metaphor."
+],
+[
+"In Chekhov's *The Wedding*, how is deception presented as a collaborative social fiction?",
+"The family actively seeks to be deceived, Nunin provides the service, and Revunov complies under social pressure."
+],
+[
+"How does Chekhov demonstrate class consciousness during the revelation of Revunov's rank?",
+"He portrays an immediate shift from warmth to hostility without offering any explicit authorial commentary."
+],
+[
+"What is the primary satirical limitation of using comic caricatures in *The Wedding*?",
+"It restricts emotional depth, causing audiences to laugh at characters rather than empathise with them."
+],
+[
+"Which element of *The Wedding* presents the greatest barrier to understanding for contemporary audiences?",
+"The precise rank equivalences and table of precedence specific to Tsarist Russia."
+],
+[
+"Why is Chekhov's satire on social climbing considered to have lasting relevance?",
+"It targets the universal mechanism of substituting acquired status symbols for genuine character and merit."
+],
+[
+"How does the shallow characterisation in *The Wedding* reinforce the play's central social critique?",
+"The one-dimensional nature of the characters directly mirrors the shallowness of their social values."
+],
+[
+"In *The Wedding*, how does the family attempt to perform social arrival beyond hiring a general?",
+"They overspend on a restaurant, an orchestra, and elaborate food that they cannot afford."
+],
+[
+"How does paying for verified status on modern social media mirror Nunin's arrangement in *The Wedding*?",
+"Both involve purchasing a symbol of status to display credibility to an audience that does not investigate."
+],
+[
+"How does the corporate practice of bringing a senior executive to impress clients reflect *The Wedding*?",
+"It uses a high-ranking individual as a social prop, directly mirroring the exploitation of Revunov."
+],
+[
+"What defines the durability of Chekhov's indirect satirical style?",
+"By refraining from stating an explicit moral, the play avoids becoming tied to or dated by a specific era."
+],
+[
+"What theatrical advantage is achieved by naming characters according to their social type in *The Wedding*?",
+"It economically prepares the audience to read and analyse each character satirically from their introduction."
+],
+[
+"What social argument is conveyed by the abrupt ending, or chaos-curtain, in *The Wedding*?",
+"It suggests that underlying social problems of vanity and class consciousness cannot be easily resolved."
+],
+[
+"How does Chekhov's abrupt ending contrast with traditional satirical resolutions?",
+"Traditional satire offers redemption or punishment to imply solutions, whereas Chekhov refuses resolution."
+],
+[
+"What risk does Chekhov's restrained satirical technique run with a distracted audience?",
+"The audience may view the performance as a series of comic sketches rather than a coherent social critique."
+],
+[
+"Why is Chekhov's indirect satirical method argued to be more effective than direct moralising?",
+"It forces the audience to participate in making the moral judgment, making the critique personal and memorable."
+],
+[
+"How does Chekhov's satirical approach differ fundamentally from Jonathan Swift's direct satire?",
+"Swift explicitly states his target, whereas Chekhov demonstrates social flaws without naming them directly."
+],
+[
+"Why would a direct, explicit critique of pretension be tonally inappropriate in *The Wedding*?",
+"Lecturing the audience directly would cause the playwright to appear as pretentious as the characters being satirised."
+],
+[
+"What conclusion does the audience independently reach regarding Nastasya Timofeyevna's priorities?",
+"She cares more about the 25 roubles spent than about Revunov's personal dignity."
+],
+[
+"What role does Revunov play in the family's deception during the wedding feast?",
+"He acts as an unwitting status prop whose presence validates the family's social pretensions."
+],
+[
+"The mechanism in *The Wedding* where acquired symbols replace genuine merit relies on collective deference to _____.",
+"titles"
+],
+[
+"In terms of audience engagement, direct social criticism is harder to misread because it provides a clear _____.",
+"target"
+],
+[
+"What does Chekhov sacrifice by choosing precision of social critique over detailed character development?",
+"The emotional range and empathy that developed human characters provide."
+],
+[
+"Why is the speed of the family's reversal towards Revunov considered the critique itself?",
+"The abrupt transition highlights how entirely their respect was dependent on rank rather than character."
+],
+[
+"In *The Wedding*, the central deception is not a simple victim-villain dynamic, but a collaborative social _____.",
+"fiction"
+],
+[
+"How does Chekhov's use of indirection prevent *The Wedding* from becoming a historical artefact?",
+"By focusing on human performance and self-deception rather than preaching a specific historical lesson."
+],
+[
+"What is the primary function of the orchestra and restaurant setting in *The Wedding*?",
+"They serve as external symbols purchased to perform an illusion of elevated social standing."
+],
+[
+"Why does direct moralising limit the longevity of a satirical play?",
+"Stated moral arguments become outdated as social norms and historical contexts change."
+],
+[
+"What requirement does Chekhov's quiet satirical style impose upon its audience?",
+"It requires an attentive audience willing to perform active interpretive work."
+],
+[
+"In *The Wedding*, what instantly destroys the social prestige that the family purchased for 25 roubles?",
+"The discovery of Revunov's true rank as a lower-status military officer."
+],
+[
+"How does Chekhov align form and content in *The Wedding*?",
+"By using a theatrical performance of comedy to satirise the social performance of class pretensions."
+],
+[
+"Why are caricatures particularly suited for sharp social satire despite lacking emotional depth?",
+"They distill social absurdities into clear, identifiable types without distracting emotional complexity."
+],
+[
+"What makes the family's financial sacrifice for the wedding reception particularly irrational?",
+"They spend money they cannot afford on guests and amenities to impress an audience rather than celebrate marriage."
+],
+[
+"In satire, what is the main advantage of direct criticism over indirect observation?",
+"It clearly states its position, minimising the risk of audience misinterpretation."
+],
+[
+"What does the abrupt curtain in *The Wedding* imply about human vanity?",
+"That human vanity is a persistent state rather than a temporary flaw that can be cured."
+],
+[
+"How does Nunin facilitate the family's social climbing in *The Wedding*?",
+"He acts as an intermediary who arranges the paid attendance of a supposed general."
+],
+[
+"What aspect of Revunov's participation highlights his own vulnerability to social pressure?",
+"He consents to attend the dinner despite not knowing the family personally."
+],
+[
+"Why is *The Wedding* still relevant in contemporary societies that lack a formal nobility?",
+"Modern societies still substitute credentials, titles, and appearances for genuine human worth."
+],
+[
+"How does Chekhov ensure that the audience owns the moral judgment in *The Wedding*?",
+"He presents unmediated evidence of social vanity, forcing the audience to draw their own conclusions."
+],
+[
+"What structural feature of *The Wedding* signals to the audience that each character represents a social type?",
+"The specific naming conventions assigned to the characters."
+],
+[
+"What does the family's instant hostility towards Revunov reveal about their initial warmth?",
+"Their warmth was entirely transactional and conditional upon his assumed social rank."
+],
+[
+"In Chekhovian drama, why does restraint often accomplish more satirical work than explicit statements?",
+"Silence and unstated ironies allow the absurdity of the characters' actions to speak for itself."
+],
+[
+"What is the central joke of *The Wedding* that recurs across different historical eras?",
+"The collective eagerness to honour empty symbols of status until their lack of substance is exposed."
+],
+[
+"What distinction separates Chekhov's treatment of deception from traditional victim-villain narratives?",
+"Chekhov depicts the deceived party as willingly complicit in maintaining the illusion."
+],
+[
+"Why is an audience watching *The Wedding* subtly implicated in the satire itself?",
+"Theatre-goers engage in social performance by attending, mirroring the characters' obsession with appearance."
+],
+[
+"What is the impact on character empathy when satire relies heavily on comic types?",
+"Audiences remain detached observers who laugh at the characters rather than feeling sympathy for them."
+],
+[
+"How does Chekhov avoid appearing morally superior to the characters he satirises?",
+"By refraining from delivering authorial lectures or explicit moral judgments through a spokesman character."
+],
+[
+"What specific cultural knowledge must a modern reader acquire to grasp the exact stakes in *The Wedding*?",
+"The hierarchical distinction between military ranks such as general and lieutenant-colonel in Tsarist Russia."
+],
+[
+"Why does Chekhov refuse to provide a redemptive ending for the characters in *The Wedding*?",
+"A redemptive ending would falsely imply that deep-seated social pretensions can be easily corrected."
+],
+[
+"What primary social drive motivates the family's expenditure on the wedding celebration?",
+"Social anxiety and the desire to perform arrival in a higher social class."
+]
+];
+
+(function () {
+  let order = DATA.map((_, i) => i);
+  let idx = 0;
+
+  const card = document.getElementById('card');
+  const qText = document.getElementById('qText');
+  const aText = document.getElementById('aText');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const shuffleBtn = document.getElementById('shuffleBtn');
+  const fill = document.getElementById('progressFill');
+  const label = document.getElementById('progressLabel');
+  const faces = card.querySelectorAll('.face');
+
+  function fmt(s) {
+    // Escape HTML, then show *text* as italics
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
+  }
+
+  function render() {
+    // Reset to the question side instantly so the next answer is never revealed mid-flip
+    card.classList.add('no-anim');
+    card.classList.remove('flipped');
+    const pair = DATA[order[idx]];
+    qText.innerHTML = fmt(pair[0]);
+    aText.innerHTML = fmt(pair[1]);
+    faces.forEach(f => { f.scrollTop = 0; });
+    void card.offsetWidth;
+    card.classList.remove('no-anim');
+
+    const total = DATA.length;
+    label.textContent = (idx + 1) + ' / ' + total;
+    fill.style.width = ((idx + 1) / total * 100) + '%';
+    prevBtn.disabled = idx === 0;
+    nextBtn.disabled = idx === total - 1;
+  }
+
+  function flip() { card.classList.toggle('flipped'); }
+  function prev() { if (idx > 0) { idx--; render(); } }
+  function next() { if (idx < DATA.length - 1) { idx++; render(); } }
+  function shuffle() {
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    idx = 0;
+    render();
+  }
+
+  card.addEventListener('click', flip);
+  prevBtn.addEventListener('click', function () { prev(); this.blur(); });
+  nextBtn.addEventListener('click', function () { next(); this.blur(); });
+  shuffleBtn.addEventListener('click', function () { shuffle(); this.blur(); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
+    else if (e.key === ' ' || e.code === 'Space') { e.preventDefault(); flip(); }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

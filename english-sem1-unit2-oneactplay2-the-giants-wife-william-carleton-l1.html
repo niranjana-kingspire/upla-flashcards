@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Giant&#x27;s Wife - William Carleton | Flashcards - L1</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: #f6f3ee;
+    color: #1a2332;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2.5rem 1rem 2rem;
+  }
+  .app { width: 100%; max-width: 560px; }
+  header { text-align: center; margin-bottom: 1.75rem; }
+  h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: normal;
+    font-size: 1.45rem;
+    line-height: 1.3;
+    color: #1a2332;
+    margin: 0 0 0.4rem;
+  }
+  .subtitle { font-size: 0.9rem; color: #6b7280; margin: 0; }
+
+  .progress { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+  .progress-track {
+    flex: 1;
+    height: 4px;
+    background: #e4ddd2;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0;
+    background: #2d5a7b;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+  .progress-label {
+    font-size: 0.85rem;
+    color: #6b7280;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .scene { perspective: 1200px; width: 100%; max-width: 560px; height: 320px; }
+  .card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 12px;
+    outline: none;
+  }
+  .card.flipped { transform: rotateY(180deg); }
+  .card.no-anim, .card.no-anim .face { transition: none !important; }
+  .card:focus-visible .face { box-shadow: 0 0 0 3px rgba(45,90,123,0.35), 0 2px 20px rgba(26,35,50,0.08); }
+
+  .face {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    box-shadow: 0 2px 20px rgba(26,35,50,0.08);
+    padding: 2rem 2.25rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  .front {
+    background: #ffffff;
+    border: 1px solid #d6cfc4;
+    transform: rotateY(0deg);
+  }
+  .back {
+    background: #2d5a7b;
+    color: #f0f6fa;
+    transform: rotateY(180deg);
+    visibility: hidden;
+    transition: visibility 0s 0.25s;
+  }
+  .card.flipped .back { visibility: visible; }
+  .card.flipped .front { visibility: hidden; transition: visibility 0s 0.25s; }
+
+  .label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #8a8275;
+    flex-shrink: 0;
+  }
+  .back .label { color: rgba(240,246,250,0.65); }
+  .text {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin: auto 0;
+    padding: 1rem 0;
+    white-space: pre-line;
+    overflow-wrap: break-word;
+  }
+  .hint {
+    font-size: 0.8rem;
+    color: #8a8275;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+  button {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.92rem;
+    border-radius: 8px;
+    padding: 0.65rem 1.25rem;
+    cursor: pointer;
+    transition: background 0.2s ease, opacity 0.2s ease;
+  }
+  button:focus-visible { outline: 3px solid rgba(45,90,123,0.35); outline-offset: 2px; }
+  .nav-btn {
+    background: #2d5a7b;
+    color: #ffffff;
+    border: 1px solid #2d5a7b;
+    min-width: 6.5rem;
+  }
+  .nav-btn:hover:not(:disabled) { background: #244a66; }
+  .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .shuffle-btn {
+    background: transparent;
+    color: #2d5a7b;
+    border: 1.5px dashed #2d5a7b;
+  }
+  .shuffle-btn:hover { background: rgba(45,90,123,0.06); }
+
+  .kbd-hint {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #8a8275;
+    margin-top: 1.25rem;
+  }
+  kbd {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.75rem;
+    background: #ffffff;
+    border: 1px solid #d6cfc4;
+    border-radius: 4px;
+    padding: 0.1rem 0.4rem;
+  }
+
+  @media (max-width: 480px) {
+    body { padding: 1.75rem 0.85rem 1.5rem; }
+    h1 { font-size: 1.25rem; }
+    .scene { height: 290px; }
+    .face { padding: 1.5rem 1.25rem; }
+    .text { font-size: 1rem; }
+    .kbd-hint { display: none; }
+    .nav-btn { min-width: 5.5rem; padding: 0.65rem 1rem; }
+    .shuffle-btn { padding: 0.65rem 0.9rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card, .progress-fill { transition: none; }
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <header>
+    <h1>The Giant&#x27;s Wife - William Carleton | Flashcards - L1</h1>
+    <p class="subtitle">William Carleton · 54 Flashcards</p>
+  </header>
+
+  <div class="progress" aria-hidden="true">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <span class="progress-label" id="progressLabel">1 / 1</span>
+  </div>
+
+  <div class="scene">
+    <div class="card" id="card" role="button" tabindex="0" aria-live="polite" aria-label="Flashcard. Activate to flip.">
+      <div class="face front">
+        <div class="label">Question</div>
+        <div class="text" id="qText"></div>
+        <div class="hint">Tap to reveal answer</div>
+      </div>
+      <div class="face back">
+        <div class="label">Answer</div>
+        <div class="text" id="aText"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="nav-btn" id="prevBtn" type="button">&larr; Prev</button>
+    <button class="shuffle-btn" id="shuffleBtn" type="button">Shuffle</button>
+    <button class="nav-btn" id="nextBtn" type="button">Next &rarr;</button>
+  </div>
+
+  <div class="kbd-hint"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> to navigate &nbsp;&middot;&nbsp; <kbd>Space</kbd> to flip</div>
+</main>
+
+<script>
+const DATA = [
+[
+"Who authored the original Irish story 'A Legend of Knockmany' upon which 'The Giant's Wife' is based?",
+"William Carleton."
+],
+[
+"In whose 1888 folk tale anthology was William Carleton's 'A Legend of Knockmany' originally published?",
+"W.B. Yeats's 'Folk and Fairy Tales of the Irish Peasantry'."
+],
+[
+"What cultural movement in Ireland aimed to preserve traditional folk heritage and included Carleton's work in Yeats's 1888 anthology?",
+"The Irish Literary Revival."
+],
+[
+"Who adapted William Carleton's original story into the classroom Reader's Theatre script 'The Giant's Wife'?",
+"Aaron Shepard."
+],
+[
+"Which two legendary figures from Irish mythology serve as the central male giants in 'The Giant's Wife'?",
+"Fin MacCool and Cuhullin."
+],
+[
+"How is the name of the rival giant 'Cuhullin' pronounced in the script's guide?",
+"It is pronounced 'koo-HULL-in'."
+],
+[
+"What was the primary cultural purpose of William Carleton's literary work on Irish folklore?",
+"To preserve traditional Irish customs, oral storytelling, and folk beliefs for future generations."
+],
+[
+"What legendary stone structure was Fin MacCool building at the start of the tale?",
+"The Giant's Causeway, built as a road connecting Ireland to Scotland."
+],
+[
+"Why did Fin MacCool flee his workplace and return home in terror?",
+"He learned that the giant Cuhullin, who had beaten every other giant in Ireland, was searching for him to fight."
+],
+[
+"Where is the source of all of Cuhullin's supernatural physical strength located?",
+"In the magic forefinger of his right hand."
+],
+[
+"What consequence suffers Cuhullin if he loses his magic right forefinger?",
+"He loses all supernatural strength and becomes no stronger than an ordinary man."
+],
+[
+"What object did Oona bake inside the loaves of bread as part of her deception?",
+"Iron griddles."
+],
+[
+"How did Oona disguise Fin MacCool to hide him from Cuhullin?",
+"She dressed him in a nightgown and bonnet, placed him in a cradle, and presented him as her infant son."
+],
+[
+"What was the first task Oona asked Cuhullin to complete while waiting for Fin?",
+"To turn the entire house around so it faced away from the cold wind."
+],
+[
+"What was the second task Oona asked Cuhullin to perform near the house?",
+"To split the mountain apart to create a new well."
+],
+[
+"Why did Oona invent the tasks of turning the house and splitting the mountain for Cuhullin?",
+"To build fear in Cuhullin by claiming Fin routinely performed these impossible tasks."
+],
+[
+"What occurred when Cuhullin bit into the bread Oona served him?",
+"He broke two of his teeth on the iron griddle hidden inside."
+],
+[
+"How did Oona trick Cuhullin into thinking 'baby' Fin possessed immense physical strength?",
+"She fed 'baby' Fin the single safe loaf without a griddle, which Fin ate effortlessly."
+],
+[
+"How did Oona induce Cuhullin to place his magic forefinger into Fin's mouth?",
+"She invited Cuhullin to feel the 'baby's' teeth to check how strong they were."
+],
+[
+"How did Fin MacCool strip Cuhullin of his magic power?",
+"He bit off Cuhullin's magic right forefinger when it was inserted into his mouth."
+],
+[
+"What did Cuhullin do immediately after losing his magic forefinger?",
+"He lost his strength and fled in terror while being chased by Fin."
+],
+[
+"What role does Oona fulfil in 'The Giant's Wife' compared to her husband Fin?",
+"She is the central problem-solver and true hero who uses intelligence, whereas Fin is paralysed by fear."
+],
+[
+"How does Oona's emotional demeanour during Cuhullin's visit contrast with Fin's emotional state?",
+"Oona remains calm, warm, and composed, whereas Fin is panicked and terrified."
+],
+[
+"What domestic items does Oona utilise to construct her elaborate trick against Cuhullin?",
+"Bread loaves, iron griddles, a cradle, a nightgown, a bonnet, and a baby bottle."
+],
+[
+"What argument occurs between Fin and Oona when she orders him into the cradle?",
+"Fin's pride rebels against being dressed as a baby, though his fear forces him to obey."
+],
+[
+"What is Oona's final line in the script as Cuhullin flees?",
+"Now, Fin, don't be too hard on the poor thing!'"
+],
+[
+"What does Oona's final line reveal about her moral disposition after defeating Cuhullin?",
+"It shows that she is compassionate and merciful rather than vindictive or aggressive."
+],
+[
+"Concept: Tall Tale",
+"Definition: A humorous story featuring extreme exaggeration and impossible feats told in a serious tone for entertainment."
+],
+[
+"Which actual geological site in Northern Ireland is connected to the legend of Fin MacCool?",
+"The Giant's Causeway."
+],
+[
+"Give an example of tall tale exaggeration regarding Cuhullin's appetite in the story.",
+"He eats three whole roast oxen and thirty cabbages in a single meal."
+],
+[
+"What exaggerated object does Cuhullin carry as a walking stick?",
+"A full-grown fir tree."
+],
+[
+"What classroom performance format is used for Aaron Shepard's adaptation of the tale?",
+"Reader's Theatre."
+],
+[
+"What are the primary performance characteristics of a Reader's Theatre presentation?",
+"Students hold scripts and read aloud with expression without full staging, costumes, or line memorisation."
+],
+[
+"How many reader roles are required to perform 'The Giant's Wife' script?",
+"Seven roles, comprising four narrators and three characters."
+],
+[
+"Where does the script direct Narrators 1–2 and 3–4 to stand during a performance?",
+"Narrators 1 and 2 stand at far left, and Narrators 3 and 4 stand at far right from the audience's perspective."
+],
+[
+"What primary theme is demonstrated when Oona overcomes Cuhullin's physical power using domestic strategy?",
+"Wit versus brute power."
+],
+[
+"How does 'The Giant's Wife' invert traditional gender expectations in folktales?",
+"The female protagonist is the intelligent protector while the male giant is helpless and hiding."
+],
+[
+"How does the narrative redefine the concept of heroism?",
+"It defines heroism through strategic thinking, composure, and crisis management rather than physical combat."
+],
+[
+"Why is Fin MacCool's magic thumb unable to solve his problem with Cuhullin?",
+"It warns him of approaching danger but offers no practical plan to overcome it."
+],
+[
+"What dilemma traps Fin MacCool between pride and fear when Cuhullin approaches?",
+"Fleeing will shame him forever, but staying risks being physically destroyed by Cuhullin."
+],
+[
+"Why did Oona inform Cuhullin that Fin was away from home when Cuhullin first arrived?",
+"She claimed Fin was out in a rage actively searching for Cuhullin to fight him."
+],
+[
+"How did Oona react internally when Cuhullin successfully turned the house and split the mountain?",
+"She was quietly astonished, as even Fin could not have accomplished those feats."
+],
+[
+"Why did Cuhullin readily believe the 'baby' was exceptionally powerful after eating the plain loaf?",
+"He assumed the child had easily chewed through the same iron-hard bread that broke his own teeth."
+],
+[
+"In what year was W.B. Yeats's collection containing Carleton's story published?",
+"1888.0"
+],
+[
+"What were the lifespan years of the Irish author William Carleton?",
+"1794 to 1869."
+],
+[
+"What object did Oona put into Fin's hands inside the cradle to complete his disguise?",
+"A baby bottle."
+],
+[
+"How does Fin MacCool activate the magical foresight provided by his thumb?",
+"He chews on his magic thumb."
+],
+[
+"The script 'The Giant's Wife' is published as part of Reader's Theater Edition #_____.",
+"39.0"
+],
+[
+"What geographical destination was Fin MacCool attempting to reach by building his stone road?",
+"Scotland."
+],
+[
+"How do narrative asides and direct addresses in the script support its oral tradition origins?",
+"They retain the engaging, conversational style of traditional Irish storytelling."
+],
+[
+"Why did Cuhullin decide to test the 'baby's' teeth with his magic forefinger?",
+"He was curious to feel the teeth of a child capable of eating such extraordinarily hard bread."
+],
+[
+"What structural element of the plot drives the resolution of 'The Giant's Wife'?",
+"A problem–plan–execution–resolution sequence designed and carried out by Oona."
+],
+[
+"How does Oona maintain control over Cuhullin throughout his visit?",
+"By adopting a hospitable, unhurried, and completely confident tone that conceals her strategy."
+],
+[
+"Why is the contrast between Fin's panic and Oona's calm central to the play's humour?",
+"It highlights the irony of Ireland's greatest male hero cowering in a cradle while his wife effortlessly manages the threat."
+]
+];
+
+(function () {
+  let order = DATA.map((_, i) => i);
+  let idx = 0;
+
+  const card = document.getElementById('card');
+  const qText = document.getElementById('qText');
+  const aText = document.getElementById('aText');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const shuffleBtn = document.getElementById('shuffleBtn');
+  const fill = document.getElementById('progressFill');
+  const label = document.getElementById('progressLabel');
+  const faces = card.querySelectorAll('.face');
+
+  function fmt(s) {
+    // Escape HTML, then show *text* as italics
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
+  }
+
+  function render() {
+    // Reset to the question side instantly so the next answer is never revealed mid-flip
+    card.classList.add('no-anim');
+    card.classList.remove('flipped');
+    const pair = DATA[order[idx]];
+    qText.innerHTML = fmt(pair[0]);
+    aText.innerHTML = fmt(pair[1]);
+    faces.forEach(f => { f.scrollTop = 0; });
+    void card.offsetWidth;
+    card.classList.remove('no-anim');
+
+    const total = DATA.length;
+    label.textContent = (idx + 1) + ' / ' + total;
+    fill.style.width = ((idx + 1) / total * 100) + '%';
+    prevBtn.disabled = idx === 0;
+    nextBtn.disabled = idx === total - 1;
+  }
+
+  function flip() { card.classList.toggle('flipped'); }
+  function prev() { if (idx > 0) { idx--; render(); } }
+  function next() { if (idx < DATA.length - 1) { idx++; render(); } }
+  function shuffle() {
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    idx = 0;
+    render();
+  }
+
+  card.addEventListener('click', flip);
+  prevBtn.addEventListener('click', function () { prev(); this.blur(); });
+  nextBtn.addEventListener('click', function () { next(); this.blur(); });
+  shuffleBtn.addEventListener('click', function () { shuffle(); this.blur(); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
+    else if (e.key === ' ' || e.code === 'Space') { e.preventDefault(); flip(); }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

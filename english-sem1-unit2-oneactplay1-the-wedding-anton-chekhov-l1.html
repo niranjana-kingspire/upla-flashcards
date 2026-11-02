@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Wedding - Anton Chekhov | Flashcards - L1</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: #f6f3ee;
+    color: #1a2332;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2.5rem 1rem 2rem;
+  }
+  .app { width: 100%; max-width: 560px; }
+  header { text-align: center; margin-bottom: 1.75rem; }
+  h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: normal;
+    font-size: 1.45rem;
+    line-height: 1.3;
+    color: #1a2332;
+    margin: 0 0 0.4rem;
+  }
+  .subtitle { font-size: 0.9rem; color: #6b7280; margin: 0; }
+
+  .progress { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+  .progress-track {
+    flex: 1;
+    height: 4px;
+    background: #e4ddd2;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0;
+    background: #2d5a7b;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+  .progress-label {
+    font-size: 0.85rem;
+    color: #6b7280;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .scene { perspective: 1200px; width: 100%; max-width: 560px; height: 320px; }
+  .card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 12px;
+    outline: none;
+  }
+  .card.flipped { transform: rotateY(180deg); }
+  .card.no-anim, .card.no-anim .face { transition: none !important; }
+  .card:focus-visible .face { box-shadow: 0 0 0 3px rgba(45,90,123,0.35), 0 2px 20px rgba(26,35,50,0.08); }
+
+  .face {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    box-shadow: 0 2px 20px rgba(26,35,50,0.08);
+    padding: 2rem 2.25rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  .front {
+    background: #ffffff;
+    border: 1px solid #d6cfc4;
+    transform: rotateY(0deg);
+  }
+  .back {
+    background: #2d5a7b;
+    color: #f0f6fa;
+    transform: rotateY(180deg);
+    visibility: hidden;
+    transition: visibility 0s 0.25s;
+  }
+  .card.flipped .back { visibility: visible; }
+  .card.flipped .front { visibility: hidden; transition: visibility 0s 0.25s; }
+
+  .label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #8a8275;
+    flex-shrink: 0;
+  }
+  .back .label { color: rgba(240,246,250,0.65); }
+  .text {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin: auto 0;
+    padding: 1rem 0;
+    white-space: pre-line;
+    overflow-wrap: break-word;
+  }
+  .hint {
+    font-size: 0.8rem;
+    color: #8a8275;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+  button {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.92rem;
+    border-radius: 8px;
+    padding: 0.65rem 1.25rem;
+    cursor: pointer;
+    transition: background 0.2s ease, opacity 0.2s ease;
+  }
+  button:focus-visible { outline: 3px solid rgba(45,90,123,0.35); outline-offset: 2px; }
+  .nav-btn {
+    background: #2d5a7b;
+    color: #ffffff;
+    border: 1px solid #2d5a7b;
+    min-width: 6.5rem;
+  }
+  .nav-btn:hover:not(:disabled) { background: #244a66; }
+  .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .shuffle-btn {
+    background: transparent;
+    color: #2d5a7b;
+    border: 1.5px dashed #2d5a7b;
+  }
+  .shuffle-btn:hover { background: rgba(45,90,123,0.06); }
+
+  .kbd-hint {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #8a8275;
+    margin-top: 1.25rem;
+  }
+  kbd {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.75rem;
+    background: #ffffff;
+    border: 1px solid #d6cfc4;
+    border-radius: 4px;
+    padding: 0.1rem 0.4rem;
+  }
+
+  @media (max-width: 480px) {
+    body { padding: 1.75rem 0.85rem 1.5rem; }
+    h1 { font-size: 1.25rem; }
+    .scene { height: 290px; }
+    .face { padding: 1.5rem 1.25rem; }
+    .text { font-size: 1rem; }
+    .kbd-hint { display: none; }
+    .nav-btn { min-width: 5.5rem; padding: 0.65rem 1rem; }
+    .shuffle-btn { padding: 0.65rem 0.9rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card, .progress-fill { transition: none; }
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <header>
+    <h1>The Wedding - Anton Chekhov | Flashcards - L1</h1>
+    <p class="subtitle">Anton Chekhov · 46 Flashcards</p>
+  </header>
+
+  <div class="progress" aria-hidden="true">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <span class="progress-label" id="progressLabel">1 / 1</span>
+  </div>
+
+  <div class="scene">
+    <div class="card" id="card" role="button" tabindex="0" aria-live="polite" aria-label="Flashcard. Activate to flip.">
+      <div class="face front">
+        <div class="label">Question</div>
+        <div class="text" id="qText"></div>
+        <div class="hint">Tap to reveal answer</div>
+      </div>
+      <div class="face back">
+        <div class="label">Answer</div>
+        <div class="text" id="aText"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="nav-btn" id="prevBtn" type="button">&larr; Prev</button>
+    <button class="shuffle-btn" id="shuffleBtn" type="button">Shuffle</button>
+    <button class="nav-btn" id="nextBtn" type="button">Next &rarr;</button>
+  </div>
+
+  <div class="kbd-hint"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> to navigate &nbsp;&middot;&nbsp; <kbd>Space</kbd> to flip</div>
+</main>
+
+<script>
+const DATA = [
+[
+"In what year was Anton Chekhov's play *The Wedding* first performed?",
+"1889"
+],
+[
+"What secondary profession did Anton Chekhov practice alongside his career as a writer?",
+"Physician / Doctor"
+],
+[
+"How did Anton Chekhov's medical background influence his literary style?",
+"It provided him with a clinical, observational approach to diagnosing human behavior and social flaws."
+],
+[
+"What was Anton Chekhov's primary motivation for writing *The Wedding*?",
+"To satirise the obsession with social rank and prestige in Russian middle-class society."
+],
+[
+"What defines the structure of a one-act play like *The Wedding*?",
+"It is a complete drama unfolding in a single continuous scene without an interval."
+],
+[
+"Where is the entirety of *The Wedding* set?",
+"In a private room in Andronov's Restaurant, Russia."
+],
+[
+"Why is the choice of Andronov's Restaurant as a venue significant to the play's themes?",
+"It highlights the hosts' expenditure of money to perform their social status publicly in a hired space."
+],
+[
+"In *The Wedding*, who is Zhigalov?",
+"A retired civil servant and the father of the bride."
+],
+[
+"What is Zhigalov's primary social motivation in the play?",
+"Appearing respectable by ensuring a high-ranking 'general' attends his daughter's wedding reception."
+],
+[
+"Who is Nastasya Timofeyevna in *The Wedding*?",
+"The bride's mother, who is defensive about her family's social status."
+],
+[
+"How is Dashenka, the bride, portrayed in terms of family dynamics?",
+"As a passive, mostly silent prop used to advance her parents' social ambitions."
+],
+[
+"Who is Aplombov in *The Wedding*?",
+"The pompous, petty, and suspicious bridegroom."
+],
+[
+"What specific demands and complaints does Aplombov make during the reception?",
+"He demands lottery tickets, complains about dowry terms, and orders guests around."
+],
+[
+"What character trait is suggested by the name 'Aplombov'?",
+"Pompous self-assurance or arrogance."
+],
+[
+"What role does Nunin play in the plot of *The Wedding*?",
+"He is an insurance agent who schemes to hire a supposed general for the reception."
+],
+[
+"How much money does Nunin pay Revunov-Karaulov to attend the wedding reception?",
+"25 roubles"
+],
+[
+"Who is Revunov-Karaulov introduced as at the wedding reception?",
+"A high-ranking military 'General'."
+],
+[
+"What is Revunov-Karaulov's actual rank, revealed near the play's end?",
+"A second-class naval captain (equivalent to a lieutenant-colonel)."
+],
+[
+"What character trait is suggested by Revunov's name, derived from the Russian word 'revun'?",
+"A tendency to bawl or speak loudly, matching his long monologues."
+],
+[
+"Who is Zmeyukina in *The Wedding*?",
+"A theatrical, attention-seeking midwife dressed in red."
+],
+[
+"What does Zmeyukina repeatedly demand during the wedding reception?",
+"She constantly demands 'atmosphere' and poetry."
+],
+[
+"What personality aspect is implied by Zmeyukina's name, derived from 'zmey' (snake)?",
+"A theatrical, sharp, or venomous disposition."
+],
+[
+"Who is Yats in *The Wedding*?",
+"A socially awkward telegraphist who tries to impress guests by tapping messages on the table."
+],
+[
+"Who is Dimba in *The Wedding*?",
+"A Greek confectioner who speaks minimal Russian."
+],
+[
+"What is Dimba's recurring comic line whenever he is questioned about Greece?",
+"'Yes, everysing is zere.'"
+],
+[
+"Term: Dramatic Irony",
+"Definition: A theatrical device where the audience possesses crucial information unknown to characters on stage."
+],
+[
+"What is the primary source of dramatic irony throughout *The Wedding*?",
+"The audience knows Revunov is a paid actor and not a real general, while the Zhigalov family treats him with reverence."
+],
+[
+"Term: Incongruity (Comic Device)",
+"Definition: The placement of something completely out of context to generate humorous mismatch."
+],
+[
+"How do Revunov's speeches demonstrate comic incongruity during the wedding supper?",
+"He delivers long, technical naval commands to confused wedding guests in a restaurant setting."
+],
+[
+"Term: Bathos",
+"Definition: A sudden, anticlimactic descent from a loftier tone or grand situation to something trivial or absurd."
+],
+[
+"How is comic repetition used as a dramatic technique with Dimba's character?",
+"His identical response to every question creates a predictable, running comic refrain."
+],
+[
+"How does social climbing drive the plot of *The Wedding*?",
+"It compels the Zhigalovs to spend extravagantly on a restaurant and a hired dignitary to impress others."
+],
+[
+"How is class consciousness exposed when Revunov reveals his true rank?",
+"The hosts' respect turns to immediate anger, demonstrating that their regard was tied solely to his title."
+],
+[
+"What immediate action does Nastasya Timofeyevna take upon discovering Revunov is not a general?",
+"She demands that Nunin return the 25 roubles paid for his appearance."
+],
+[
+"What does Nastasya's demand for the 25 roubles expose about her social ambitions?",
+"It exposes her perception of social prestige as a direct financial transaction rather than genuine hospitality."
+],
+[
+"Which three main social themes intermingle to drive the conflict in *The Wedding*?",
+"Social climbing, deception, and class consciousness."
+],
+[
+"Term: Satire",
+"Definition: Writing that uses humour, irony, or exaggeration to expose and criticise human folly or social corruption."
+],
+[
+"How does Chekhov employ the technique of 'indirection' in his satirical plays?",
+"He avoids explicit moral lecturing, allowing the absurdity of the situation to convey the critique."
+],
+[
+"How does Chekhov use 'ensemble chaos' as a dramatic technique in *The Wedding*?",
+"He overlays multiple simultaneous conversations and crises to illustrate chaotic social breakdown."
+],
+[
+"What characterizes the final stage image before the curtain falls in *The Wedding*?",
+"Total disorder, with Zmeyukina suffocating, Yats in raptures, and a groomsman shouting over the noise."
+],
+[
+"What satirical point is communicated through the abrupt, chaotic ending of *The Wedding*?",
+"That social pretension does not lead to moral growth or resolution, but collapses into noise and confusion."
+],
+[
+"Why does Nastasya Timofeyevna scold Revunov before his true identity is revealed?",
+"She scolds him for boring the guests with his technical naval monologues."
+],
+[
+"What specific technique does Yats use at the table to express romance?",
+"He taps romantic messages on the table using telegraph code."
+],
+[
+"In what political era was *The Wedding* first performed in Russia?",
+"During the reign of Tsar Alexander III."
+],
+[
+"How does Chekhov's use of charactonym (apt naming) function in the play?",
+"It signals a character's core social type or flaw before they even speak."
+],
+[
+"What does the contrast between the restaurant's festive setting and the guests' behaviour reveal?",
+"The surface celebration conceals intense underlying anxiety regarding social rank and status."
+]
+];
+
+(function () {
+  let order = DATA.map((_, i) => i);
+  let idx = 0;
+
+  const card = document.getElementById('card');
+  const qText = document.getElementById('qText');
+  const aText = document.getElementById('aText');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const shuffleBtn = document.getElementById('shuffleBtn');
+  const fill = document.getElementById('progressFill');
+  const label = document.getElementById('progressLabel');
+  const faces = card.querySelectorAll('.face');
+
+  function fmt(s) {
+    // Escape HTML, then show *text* as italics
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
+  }
+
+  function render() {
+    // Reset to the question side instantly so the next answer is never revealed mid-flip
+    card.classList.add('no-anim');
+    card.classList.remove('flipped');
+    const pair = DATA[order[idx]];
+    qText.innerHTML = fmt(pair[0]);
+    aText.innerHTML = fmt(pair[1]);
+    faces.forEach(f => { f.scrollTop = 0; });
+    void card.offsetWidth;
+    card.classList.remove('no-anim');
+
+    const total = DATA.length;
+    label.textContent = (idx + 1) + ' / ' + total;
+    fill.style.width = ((idx + 1) / total * 100) + '%';
+    prevBtn.disabled = idx === 0;
+    nextBtn.disabled = idx === total - 1;
+  }
+
+  function flip() { card.classList.toggle('flipped'); }
+  function prev() { if (idx > 0) { idx--; render(); } }
+  function next() { if (idx < DATA.length - 1) { idx++; render(); } }
+  function shuffle() {
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    idx = 0;
+    render();
+  }
+
+  card.addEventListener('click', flip);
+  prevBtn.addEventListener('click', function () { prev(); this.blur(); });
+  nextBtn.addEventListener('click', function () { next(); this.blur(); });
+  shuffleBtn.addEventListener('click', function () { shuffle(); this.blur(); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
+    else if (e.key === ' ' || e.code === 'Space') { e.preventDefault(); flip(); }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
