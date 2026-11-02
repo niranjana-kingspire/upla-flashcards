@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ecology - A.K. Ramanujan | Flashcards - L5</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: #f6f3ee;
+    color: #1a2332;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2.5rem 1rem 2rem;
+  }
+  .app { width: 100%; max-width: 560px; }
+  header { text-align: center; margin-bottom: 1.75rem; }
+  h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: normal;
+    font-size: 1.45rem;
+    line-height: 1.3;
+    color: #1a2332;
+    margin: 0 0 0.4rem;
+  }
+  .subtitle { font-size: 0.9rem; color: #6b7280; margin: 0; }
+
+  .progress { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+  .progress-track {
+    flex: 1;
+    height: 4px;
+    background: #e4ddd2;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0;
+    background: #2d5a7b;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+  .progress-label {
+    font-size: 0.85rem;
+    color: #6b7280;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .scene { perspective: 1200px; width: 100%; max-width: 560px; height: 320px; }
+  .card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 12px;
+    outline: none;
+  }
+  .card.flipped { transform: rotateY(180deg); }
+  .card.no-anim, .card.no-anim .face { transition: none !important; }
+  .card:focus-visible .face { box-shadow: 0 0 0 3px rgba(45,90,123,0.35), 0 2px 20px rgba(26,35,50,0.08); }
+
+  .face {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    box-shadow: 0 2px 20px rgba(26,35,50,0.08);
+    padding: 2rem 2.25rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  .front {
+    background: #ffffff;
+    border: 1px solid #d6cfc4;
+    transform: rotateY(0deg);
+  }
+  .back {
+    background: #2d5a7b;
+    color: #f0f6fa;
+    transform: rotateY(180deg);
+    visibility: hidden;
+    transition: visibility 0s 0.25s;
+  }
+  .card.flipped .back { visibility: visible; }
+  .card.flipped .front { visibility: hidden; transition: visibility 0s 0.25s; }
+
+  .label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #8a8275;
+    flex-shrink: 0;
+  }
+  .back .label { color: rgba(240,246,250,0.65); }
+  .text {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin: auto 0;
+    padding: 1rem 0;
+    white-space: pre-line;
+    overflow-wrap: break-word;
+  }
+  .hint {
+    font-size: 0.8rem;
+    color: #8a8275;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+  button {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.92rem;
+    border-radius: 8px;
+    padding: 0.65rem 1.25rem;
+    cursor: pointer;
+    transition: background 0.2s ease, opacity 0.2s ease;
+  }
+  button:focus-visible { outline: 3px solid rgba(45,90,123,0.35); outline-offset: 2px; }
+  .nav-btn {
+    background: #2d5a7b;
+    color: #ffffff;
+    border: 1px solid #2d5a7b;
+    min-width: 6.5rem;
+  }
+  .nav-btn:hover:not(:disabled) { background: #244a66; }
+  .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .shuffle-btn {
+    background: transparent;
+    color: #2d5a7b;
+    border: 1.5px dashed #2d5a7b;
+  }
+  .shuffle-btn:hover { background: rgba(45,90,123,0.06); }
+
+  .kbd-hint {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #8a8275;
+    margin-top: 1.25rem;
+  }
+  kbd {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.75rem;
+    background: #ffffff;
+    border: 1px solid #d6cfc4;
+    border-radius: 4px;
+    padding: 0.1rem 0.4rem;
+  }
+
+  @media (max-width: 480px) {
+    body { padding: 1.75rem 0.85rem 1.5rem; }
+    h1 { font-size: 1.25rem; }
+    .scene { height: 290px; }
+    .face { padding: 1.5rem 1.25rem; }
+    .text { font-size: 1rem; }
+    .kbd-hint { display: none; }
+    .nav-btn { min-width: 5.5rem; padding: 0.65rem 1rem; }
+    .shuffle-btn { padding: 0.65rem 0.9rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card, .progress-fill { transition: none; }
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <header>
+    <h1>Ecology - A.K. Ramanujan | Flashcards - L5</h1>
+    <p class="subtitle">A.K. Ramanujan · 50 Flashcards</p>
+  </header>
+
+  <div class="progress" aria-hidden="true">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <span class="progress-label" id="progressLabel">1 / 1</span>
+  </div>
+
+  <div class="scene">
+    <div class="card" id="card" role="button" tabindex="0" aria-live="polite" aria-label="Flashcard. Activate to flip.">
+      <div class="face front">
+        <div class="label">Question</div>
+        <div class="text" id="qText"></div>
+        <div class="hint">Tap to reveal answer</div>
+      </div>
+      <div class="face back">
+        <div class="label">Answer</div>
+        <div class="text" id="aText"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="nav-btn" id="prevBtn" type="button">&larr; Prev</button>
+    <button class="shuffle-btn" id="shuffleBtn" type="button">Shuffle</button>
+    <button class="nav-btn" id="nextBtn" type="button">Next &rarr;</button>
+  </div>
+
+  <div class="kbd-hint"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> to navigate &nbsp;&middot;&nbsp; <kbd>Space</kbd> to flip</div>
+</main>
+
+<script>
+const DATA = [
+[
+"In the evaluative debate of A. K. Ramanujan's 'Ecology,' what is the primary argument for viewing the poem's ambivalence as a weakness?",
+"It suggests the poem sits on the fence, offering description rather than clear judgement."
+],
+[
+"Why is the refusal to resolve the tension between nature and human conflict considered the poem's 'achievement' by some critics?",
+"It avoids falsifying the messy reality of how families relate to inherited natural and cultural objects."
+],
+[
+"How does the clinical title 'Ecology' support the poem's lack of a tidy resolution?",
+"Ecology studies systems of interdependence and trade-off rather than identifying a single winner."
+],
+[
+"What 'tidy resolution' regarding the harmful tree does the poem specifically avoid for the sake of realism?",
+"Forcing a choice between 'nature must be preserved' or 'harmful nature must be removed.'"
+],
+[
+"When evaluating the theme of family memory, what concern is raised regarding 'ongoing harm'?",
+"Whether memory acts as a way to excuse or permit continued suffering."
+],
+[
+"To what external system is the consolation in 'Ecology' compared to evaluate its legitimacy?",
+"The religious consolation in William Blake's 'The Chimney Sweeper.'"
+],
+[
+"In Blake's 'The Chimney Sweeper,' why is the comfort offered to children considered problematic?",
+"It comes from an external, self-interested system (church and economy) that benefits from their suffering."
+],
+[
+"What specific factor distinguishes the mother's choice in 'Ecology' from the children's situation in Blake's poem?",
+"The mother is the one who both pays the physical cost and makes the authority-based decision."
+],
+[
+"The mother's stance in 'Ecology' is a legitimate _____ _____ because she weighs the pros and cons of her own suffering.",
+"value judgement"
+],
+[
+"Why is the motherâ€™s acceptance of the tree's pollen not considered an 'imposed ideology'?",
+"Because the person suffering the harm is the same person choosing to accept the cost."
+],
+[
+"What is the primary pedagogical risk of dividing the poem 'Ecology' into three separate themes?",
+"It risks imposing a tidier academic structure than the poem's actual causal chain supports."
+],
+[
+"Concept: Causal Chain in 'Ecology'",
+"Ecology causes family memory, which in turn causes the nature-versus-human tension."
+],
+[
+"Under what condition is dividing the poem into three themes considered a valid study tool?",
+"If the reader remains aware that the three strands function as one connected argument."
+],
+[
+"How does ending the poem with the word 'migraines' serve as an evaluative statement?",
+"It emphasizes an unresolved cost rather than providing a clean resolution."
+],
+[
+"What hypothetical ending would represent a 'clean resolution' for the poem's central conflict?",
+"An ending where the harmful tree is finally cut down."
+],
+[
+"Ecology as a discipline is characterized by systems of _____ and _____, rather than single winners.",
+"interdependence; trade-off"
+],
+[
+"The comparison between 'Ecology' and 'The Chimney Sweeper' ultimately favors the mother because her choice lacks _____ _____.",
+"institutional coercion"
+],
+[
+"In the structural analysis of the poem, 'family memory' is the direct result of _____.",
+"ecology"
+],
+[
+"In the structural analysis of the poem, 'nature-versus-human tension' is the direct result of _____.",
+"family memory"
+],
+[
+"What specific physical cost does the mother in 'Ecology' choose to accept?",
+"The migraines caused by the tree's pollen."
+],
+[
+"Why might a reader argue that the poem's unresolved ending is 'thematically appropriate'?",
+"It reflects the complexity of ecological systems and lived family reality."
+],
+[
+"Is the division of 'Ecology' into three themes considered an accurate reflection of its poetic structure?",
+"No, it is a pedagogical device that falsely separates what is actually a single causal chain."
+],
+[
+"What does the poem 'Ecology' offer instead of a moral judgement on the family's actions?",
+"A clinical or scientific description of a system of trade-offs."
+],
+[
+"The 'Stronger Position' regarding the validity of the mother's choice hinges on her _____ over her own trade-off.",
+"authority"
+],
+[
+"Critics of 'religious consolation' argue it benefits _____ rather than the individuals suffering.",
+"external systems"
+],
+[
+"How does the poem characterize the relationship between humans and 'inherited natural objects'?",
+"As a 'messy reality' that resists tidy or simple resolutions."
+],
+[
+"The poem's refusal to condemn the family is seen as a _____ by those who believe poetry should take a clear stance.",
+"shortcoming"
+],
+[
+"True or False: According to the text, dividing the poem into themes has zero value for study purposes.",
+"False, it has value for isolating and discussing strands, provided their connection is understood."
+],
+[
+"The comparison to Blake suggests that 'Ecology' avoids _____ the reality of suffering through external systems.",
+"excusing"
+],
+[
+"What is the 'evaluative' significance of the poet's choice not to cut down the tree in the narrative?",
+"It serves as a deliberate statement on the persistence of unresolved costs."
+],
+[
+"According to the L5 evaluation, what is the 'weaker' position regarding the poem's ambivalence?",
+"That the poem is evasive and fails to take a clear moral stance."
+],
+[
+"The term 'ecology' implies a balance in a system; how does this relate to the poem's ending?",
+"The ending represents a balanced, albeit painful, interdependence rather than a victory for one side."
+],
+[
+"What distinguishes 'legitimate value judgements' from 'imposed ideologies' in the context of suffering?",
+"Whether the sufferer has the authority to choose the trade-off themselves."
+],
+[
+"Why is the three-theme division described as 'academic structure'?",
+"Because it organizes the content for learning even if the poem itself is more fluid."
+],
+[
+"In the comparison with Blake, who is the 'external beneficiary' in 'Ecology'?",
+"There is no external beneficiary; the mother is the one who bears the cost and makes the choice."
+],
+[
+"The 'Ecology' of the poem is not just biological, but also involves _____ and _____ systems.",
+"natural; cultural"
+],
+[
+"What does the text suggest would happen to the poem's integrity if it 'took a side'?",
+"It would falsify the complex ways families actually relate to their environment."
+],
+[
+"What is the final evaluative takeaway regarding the validity of the mother's choice?",
+"It is valid because her authority over her own suffering distinguishes it from exploitation."
+],
+[
+"In the causal chain Ecology $\\rightarrow$ Family Memory $\\rightarrow$ Nature vs. Human Conflict, which element acts as the catalyst?",
+"Ecology"
+],
+[
+"How does the 'scientific' nature of the title 'Ecology' impact the reader's expectation of a moral conclusion?",
+"It shifts the focus from moral judgement to the observation of interdependent trade-offs."
+],
+[
+"Term: Evasive Ambivalence",
+"Definition: The critical view that the poem fails to resolve its themes because it avoids taking a definitive stance."
+],
+[
+"Why is the word 'migraines' considered a better ending than 'cutting the tree' for this specific poem?",
+"It maintains the theme of ongoing, unresolved cost essential to the poem's evaluative stance."
+],
+[
+"The division into themes allows a reader to _____ and _____ each strand, despite their interconnectedness.",
+"isolate; discuss"
+],
+[
+"Which poem's critique of 'religious consolation' serves as a foil to the mother's decision in 'Ecology'?",
+"William Blake's 'The Chimney Sweeper.'"
+],
+[
+"According to the L5 analysis, is the poem 'Ecology' successful in its ambivalence?",
+"Yes, it is considered an achievement because it accurately reflects complex systems."
+],
+[
+"What does the phrase 'falsify the messier reality' refer to in the context of the poem's themes?",
+"The danger of providing a simple solution to complex family and natural interdependencies."
+],
+[
+"How is the mother's decision-making process described in relation to the physical cost of the tree?",
+"As an exercise of her own authority."
+],
+[
+"In the comparison to Blake, 'self-interested systems' are contrasted with the mother's _____ _____.",
+"self-selected cost"
+],
+[
+"The pedagogical division of themes is 'valid for study' provided what is not lost?",
+"The causal connection between the three themes."
+],
+[
+"True or False: The poem 'Ecology' ultimately encourages the removal of harmful natural elements.",
+"False, the poem deliberately refuses to endorse such a resolution."
+]
+];
+
+(function () {
+  let order = DATA.map((_, i) => i);
+  let idx = 0;
+
+  const card = document.getElementById('card');
+  const qText = document.getElementById('qText');
+  const aText = document.getElementById('aText');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const shuffleBtn = document.getElementById('shuffleBtn');
+  const fill = document.getElementById('progressFill');
+  const label = document.getElementById('progressLabel');
+  const faces = card.querySelectorAll('.face');
+
+  function render() {
+    // Reset to the question side instantly so the next answer is never revealed mid-flip
+    card.classList.add('no-anim');
+    card.classList.remove('flipped');
+    const pair = DATA[order[idx]];
+    qText.textContent = pair[0];
+    aText.textContent = pair[1];
+    faces.forEach(f => { f.scrollTop = 0; });
+    void card.offsetWidth;
+    card.classList.remove('no-anim');
+
+    const total = DATA.length;
+    label.textContent = (idx + 1) + ' / ' + total;
+    fill.style.width = ((idx + 1) / total * 100) + '%';
+    prevBtn.disabled = idx === 0;
+    nextBtn.disabled = idx === total - 1;
+  }
+
+  function flip() { card.classList.toggle('flipped'); }
+  function prev() { if (idx > 0) { idx--; render(); } }
+  function next() { if (idx < DATA.length - 1) { idx++; render(); } }
+  function shuffle() {
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    idx = 0;
+    render();
+  }
+
+  card.addEventListener('click', flip);
+  prevBtn.addEventListener('click', function () { prev(); this.blur(); });
+  nextBtn.addEventListener('click', function () { next(); this.blur(); });
+  shuffleBtn.addEventListener('click', function () { shuffle(); this.blur(); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
+    else if (e.key === ' ' || e.code === 'Space') { e.preventDefault(); flip(); }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

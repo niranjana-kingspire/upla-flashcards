@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ecology - A.K. Ramanujan | Flashcards - L2</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: #f6f3ee;
+    color: #1a2332;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2.5rem 1rem 2rem;
+  }
+  .app { width: 100%; max-width: 560px; }
+  header { text-align: center; margin-bottom: 1.75rem; }
+  h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: normal;
+    font-size: 1.45rem;
+    line-height: 1.3;
+    color: #1a2332;
+    margin: 0 0 0.4rem;
+  }
+  .subtitle { font-size: 0.9rem; color: #6b7280; margin: 0; }
+
+  .progress { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+  .progress-track {
+    flex: 1;
+    height: 4px;
+    background: #e4ddd2;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0;
+    background: #2d5a7b;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+  .progress-label {
+    font-size: 0.85rem;
+    color: #6b7280;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .scene { perspective: 1200px; width: 100%; max-width: 560px; height: 320px; }
+  .card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 12px;
+    outline: none;
+  }
+  .card.flipped { transform: rotateY(180deg); }
+  .card.no-anim, .card.no-anim .face { transition: none !important; }
+  .card:focus-visible .face { box-shadow: 0 0 0 3px rgba(45,90,123,0.35), 0 2px 20px rgba(26,35,50,0.08); }
+
+  .face {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    box-shadow: 0 2px 20px rgba(26,35,50,0.08);
+    padding: 2rem 2.25rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  .front {
+    background: #ffffff;
+    border: 1px solid #d6cfc4;
+    transform: rotateY(0deg);
+  }
+  .back {
+    background: #2d5a7b;
+    color: #f0f6fa;
+    transform: rotateY(180deg);
+    visibility: hidden;
+    transition: visibility 0s 0.25s;
+  }
+  .card.flipped .back { visibility: visible; }
+  .card.flipped .front { visibility: hidden; transition: visibility 0s 0.25s; }
+
+  .label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #8a8275;
+    flex-shrink: 0;
+  }
+  .back .label { color: rgba(240,246,250,0.65); }
+  .text {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin: auto 0;
+    padding: 1rem 0;
+    white-space: pre-line;
+    overflow-wrap: break-word;
+  }
+  .hint {
+    font-size: 0.8rem;
+    color: #8a8275;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+  button {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.92rem;
+    border-radius: 8px;
+    padding: 0.65rem 1.25rem;
+    cursor: pointer;
+    transition: background 0.2s ease, opacity 0.2s ease;
+  }
+  button:focus-visible { outline: 3px solid rgba(45,90,123,0.35); outline-offset: 2px; }
+  .nav-btn {
+    background: #2d5a7b;
+    color: #ffffff;
+    border: 1px solid #2d5a7b;
+    min-width: 6.5rem;
+  }
+  .nav-btn:hover:not(:disabled) { background: #244a66; }
+  .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .shuffle-btn {
+    background: transparent;
+    color: #2d5a7b;
+    border: 1.5px dashed #2d5a7b;
+  }
+  .shuffle-btn:hover { background: rgba(45,90,123,0.06); }
+
+  .kbd-hint {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #8a8275;
+    margin-top: 1.25rem;
+  }
+  kbd {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.75rem;
+    background: #ffffff;
+    border: 1px solid #d6cfc4;
+    border-radius: 4px;
+    padding: 0.1rem 0.4rem;
+  }
+
+  @media (max-width: 480px) {
+    body { padding: 1.75rem 0.85rem 1.5rem; }
+    h1 { font-size: 1.25rem; }
+    .scene { height: 290px; }
+    .face { padding: 1.5rem 1.25rem; }
+    .text { font-size: 1rem; }
+    .kbd-hint { display: none; }
+    .nav-btn { min-width: 5.5rem; padding: 0.65rem 1rem; }
+    .shuffle-btn { padding: 0.65rem 0.9rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card, .progress-fill { transition: none; }
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <header>
+    <h1>Ecology - A.K. Ramanujan | Flashcards - L2</h1>
+    <p class="subtitle">A.K. Ramanujan · 80 Flashcards</p>
+  </header>
+
+  <div class="progress" aria-hidden="true">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <span class="progress-label" id="progressLabel">1 / 1</span>
+  </div>
+
+  <div class="scene">
+    <div class="card" id="card" role="button" tabindex="0" aria-live="polite" aria-label="Flashcard. Activate to flip.">
+      <div class="face front">
+        <div class="label">Question</div>
+        <div class="text" id="qText"></div>
+        <div class="hint">Tap to reveal answer</div>
+      </div>
+      <div class="face back">
+        <div class="label">Answer</div>
+        <div class="text" id="aText"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="nav-btn" id="prevBtn" type="button">&larr; Prev</button>
+    <button class="shuffle-btn" id="shuffleBtn" type="button">Shuffle</button>
+    <button class="nav-btn" id="nextBtn" type="button">Next &rarr;</button>
+  </div>
+
+  <div class="kbd-hint"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> to navigate &nbsp;&middot;&nbsp; <kbd>Space</kbd> to flip</div>
+</main>
+
+<script>
+const DATA = [
+[
+"What were A. K. Ramanujan's professional roles besides being a poet?",
+"He was a scholar, linguist, and folklorist."
+],
+[
+"How did Ramanujan's academic background shape his writing?",
+"It allowed him to blend precise scientific observation with personal memory."
+],
+[
+"Which 1986 collection contains the poem \"Ecology\"?",
+"Second Sight."
+],
+[
+"What is the structural style of Ramanujan's mature poetry as seen in \"Ecology\"?",
+"It mixes plain, everyday language with careful structure."
+],
+[
+"What is the contrast between the title \"Ecology\" and the poem's actual content?",
+"The scientific-sounding title covers a very personal, emotional memory about his mother."
+],
+[
+"What is the core meditation presented in the poem \"Ecology\"?",
+"How humans and nature depend on each other."
+],
+[
+"How many stanzas comprise the poem \"Ecology\"?",
+"Seven."
+],
+[
+"What is the primary emotion established in the first stanza?",
+"Anger."
+],
+[
+"In the second stanza, what causes the mother's migraine?",
+"The blooming of the Champak trees."
+],
+[
+"How do stanzas three and four describe the reach of the tree's fragrance?",
+"The smell is inescapable, filling the street and entering the house."
+],
+[
+"What central conflict is introduced in stanza five?",
+"The mother suffers from the tree's effects but refuses to have it cut down."
+],
+[
+"What historical and religious factors in stanza six justify keeping the tree?",
+"Its age, its chance origin, and its role in family worship."
+],
+[
+"What irony is revealed in the final stanza?",
+"The same tree provides both comfort to the family and recurring pain to the mother."
+],
+[
+"The poem's stanzas are structured as a(n) _____ rather than a simple list of images.",
+"cause-and-effect chain"
+],
+[
+"What does the \"yellow pollen fog\" represent beyond its literal meaning?",
+"The inescapable and oppressive nature of the tree's effect on the household."
+],
+[
+"Why is the pollen described as something that \"no wind could sift\"?",
+"To emphasize how overwhelming and permanent the scent feels."
+],
+[
+"What does the image of the house with \"ears and eyes\" explain about the family?",
+"They and their home are extremely sensitive and porous to the surrounding world."
+],
+[
+"To what does the poet compare the mother's temper?",
+"Twisted silver."
+],
+[
+"What is the significance of the silver in the \"twisted silver\" metaphor?",
+"It links the mother's anger to her own mother and family heritage."
+],
+[
+"What are the two levels on which the poem's imagery works?",
+"Describing the physical scene and explaining family relationships and history."
+],
+[
+"Why does the mother treat the tree as a gift rather than an ordinary plant?",
+"Because it grew on its own by chance, termed as \"providential droppings.\""
+],
+[
+"How are the Champak flowers used in the family's daily religious life?",
+"They are used for worship and shared among the women of the family."
+],
+[
+"What is the mother's core argument for refusing to cut the tree?",
+"Cultural and emotional value can outweigh physical comfort."
+],
+[
+"In the theme of ecology, what is the tree's role in the household?",
+"It is a full participant in family life rather than just background scenery."
+],
+[
+"According to the theme of family memory, why is the tree's age important?",
+"Removing it would mean cutting away history that served previous generations."
+],
+[
+"What trade-off is explored in the nature-versus-human theme?",
+"A single source can provide both religious beauty and physical pain."
+],
+[
+"How does the poem resolve the tension between nature and human comfort?",
+"It accepts the tension as an ordinary and inescapable part of family life."
+],
+[
+"The phrase \"_____ droppings\" refers to the tree's chance and divine origin.",
+"providential"
+],
+[
+"According to the text, the mother values _____ over personal comfort.",
+"memory and meaning"
+],
+[
+"What phrase describes the recurring nature of the tree's dual effects in stanza seven?",
+"In season."
+],
+[
+"The house is described as absorbing sound and smell through its \"_____ and _____.\"",
+"ears and eyes"
+],
+[
+"What does the family-memory theme explain about the nature-versus-human conflict?",
+"It explains why the conflict is never simply resolved by removing the tree."
+],
+[
+"Ramanujan's background in several _____ traditions shaped his writing on family and nature.",
+"Indian"
+],
+[
+"How does the \"twisted silver\" image transform an invisible emotion?",
+"It turns the mother's anger into something sharp, visible, and inherited."
+],
+[
+"The tree is older than the current generation and served the poet's _____.",
+"grandmother"
+],
+[
+"What is the primary reason the house is described as \"porous\"?",
+"It is equally sensitive as the humans living inside it to the environment."
+],
+[
+"What does the ecology theme highlight about the tree's presence?",
+"It is a living entity tied to family identity across generations."
+],
+[
+"What does the phrase \"no wind could sift\" suggest about the pollen's physical presence?",
+"It is dense, pervasive, and impossible to filter out."
+],
+[
+"How does stanza 2 relate to the anger established in stanza 1?",
+"It provides the specific reason or cause for that unexplained anger."
+],
+[
+"The mother's insistence on keeping the tree reflects the values of many _____ households.",
+"Indian"
+],
+[
+"What dual role does the \"twisted silver\" imagery play?",
+"It functions as both a family heirloom memory and a simile for anger."
+],
+[
+"Why is removing the tree seen as a loss of history in the poem?",
+"The tree is an ancestral link that has supported the family's religious practices for years."
+],
+[
+"According to the summary of stanza 7, what irony concludes the poem?",
+"The thing that comforts the family also causes it repeated pain."
+],
+[
+"What specific academic training helped Ramanujan observe nature scientifically?",
+"Training as a linguist and folklorist."
+],
+[
+"The tree's flowers are specifically shared with the _____ of the family.",
+"women"
+],
+[
+"What does the \"nature vs. human conflict\" theme bring together?",
+"It brings ecology and family memory together to show how benefit and harm coexist."
+],
+[
+"The scientific title used for a personal memory is a summary of the poem's _____.",
+"irony (or methodology)"
+],
+[
+"In the poem, the house is depicted as \"living\" because it _____ the environment.",
+"senses (or absorbs)"
+],
+[
+"What makes the mother's refusal to cut the tree a \"cultural attachment\"?",
+"The tree carries religious and generational meanings that outweigh discomfort."
+],
+[
+"The stanzas form a _____ chain where one event explains the next.",
+"cause-and-effect"
+],
+[
+"What does the yellow pollen fog represent regarding the mother's migraine?",
+"The physical and inescapable trigger of her suffering."
+],
+[
+"Which theme suggests that a tree is a full participant in family life?",
+"Ecology."
+],
+[
+"What does the poem accept as part of ordinary family life regarding nature?",
+"The unresolved tension between natural beauty and human pain."
+],
+[
+"The mother treats the tree's chance origin as _____.",
+"providential"
+],
+[
+"The \"twisted silver\" temper link shows that the mother's anger is _____.",
+"inherited (or linked to her heritage)"
+],
+[
+"In stanza 6, the tree is linked to daily _____ practice.",
+"religious"
+],
+[
+"What does the imagery of the house's \"ears and eyes\" imply about the family's boundary with nature?",
+"The boundary is porous, meaning they are deeply affected by their surroundings."
+],
+[
+"What is the significance of the collection Second Sight (1986) in Ramanujan's career?",
+"It reflects a mature style published relatively late in his career."
+],
+[
+"According to the text, the mother's refusal is an argument that cultural value can _____ physical comfort.",
+"outweigh"
+],
+[
+"What term describes the mother's temper in relation to her own mother's silver?",
+"Twisted silver."
+],
+[
+"What does the presence of the tree provide for the women of the family?",
+"Flowers for worship and shared family identity."
+],
+[
+"Ramanujan's poetry blends scientific observation with _____ _____.",
+"personal memory"
+],
+[
+"The scientific-sounding title \"Ecology\" is used for a poem about the poet's _____.",
+"mother"
+],
+[
+"The poem's seven stanzas move through a _____ connected memory.",
+"single"
+],
+[
+"What is the reason given for why the wind cannot \"sift\" the pollen fog?",
+"The scent is too thick and inescapable."
+],
+[
+"What is the irony of the tree providing flowers and migraines \"in season\"?",
+"The season of beauty is simultaneously the season of suffering."
+],
+[
+"The \"living\" house is sensitive to both _____ and _____.",
+"sound; smell"
+],
+[
+"What does the family-memory theme identify as the cost of removing the tree?",
+"The removal of shared history and generational ties."
+],
+[
+"Ramanujan was a scholar of language and culture across several _____ traditions.",
+"Indian"
+],
+[
+"The poem shows that living with nature always involves _____.",
+"trade-offs"
+],
+[
+"In which stanza does the poet explain the mother's reasoning for keeping the tree?",
+"Stanza six."
+],
+[
+"The \"yellow pollen fog\" makes an abstract idea feel _____.",
+"physical and immediate"
+],
+[
+"What does the mother's refusal reveal about her value system?",
+"She values memory and meaning over physical ease."
+],
+[
+"The tree grew from \"providential droppings,\" meaning it was planted by _____.",
+"chance (or birds/nature)"
+],
+[
+"What does the poet use to link the mother's emotion to her family heritage?",
+"An heirloom image (twisted silver)."
+],
+[
+"According to stanza 7, the tree's dual nature is part of its _____ cycle.",
+"seasonal"
+],
+[
+"What kind of language does Ramanujan mix with careful structure in \"Ecology\"?",
+"Plain, everyday language."
+],
+[
+"The poem concludes that nature is a _____ in family life, not just background.",
+"full participant"
+],
+[
+"What is the surface meaning of the \"yellow pollen fog\"?",
+"A strong-smelling haze from the flowers."
+],
+[
+"The mother's migraine is the cause behind the _____ expressed in stanza one.",
+"anger"
+]
+];
+
+(function () {
+  let order = DATA.map((_, i) => i);
+  let idx = 0;
+
+  const card = document.getElementById('card');
+  const qText = document.getElementById('qText');
+  const aText = document.getElementById('aText');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const shuffleBtn = document.getElementById('shuffleBtn');
+  const fill = document.getElementById('progressFill');
+  const label = document.getElementById('progressLabel');
+  const faces = card.querySelectorAll('.face');
+
+  function render() {
+    // Reset to the question side instantly so the next answer is never revealed mid-flip
+    card.classList.add('no-anim');
+    card.classList.remove('flipped');
+    const pair = DATA[order[idx]];
+    qText.textContent = pair[0];
+    aText.textContent = pair[1];
+    faces.forEach(f => { f.scrollTop = 0; });
+    void card.offsetWidth;
+    card.classList.remove('no-anim');
+
+    const total = DATA.length;
+    label.textContent = (idx + 1) + ' / ' + total;
+    fill.style.width = ((idx + 1) / total * 100) + '%';
+    prevBtn.disabled = idx === 0;
+    nextBtn.disabled = idx === total - 1;
+  }
+
+  function flip() { card.classList.toggle('flipped'); }
+  function prev() { if (idx > 0) { idx--; render(); } }
+  function next() { if (idx < DATA.length - 1) { idx++; render(); } }
+  function shuffle() {
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    idx = 0;
+    render();
+  }
+
+  card.addEventListener('click', flip);
+  prevBtn.addEventListener('click', function () { prev(); this.blur(); });
+  nextBtn.addEventListener('click', function () { next(); this.blur(); });
+  shuffleBtn.addEventListener('click', function () { shuffle(); this.blur(); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
+    else if (e.key === ' ' || e.code === 'Space') { e.preventDefault(); flip(); }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

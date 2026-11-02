@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ecology - A.K. Ramanujan | Flashcards - L3</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: #f6f3ee;
+    color: #1a2332;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2.5rem 1rem 2rem;
+  }
+  .app { width: 100%; max-width: 560px; }
+  header { text-align: center; margin-bottom: 1.75rem; }
+  h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: normal;
+    font-size: 1.45rem;
+    line-height: 1.3;
+    color: #1a2332;
+    margin: 0 0 0.4rem;
+  }
+  .subtitle { font-size: 0.9rem; color: #6b7280; margin: 0; }
+
+  .progress { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+  .progress-track {
+    flex: 1;
+    height: 4px;
+    background: #e4ddd2;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0;
+    background: #2d5a7b;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+  .progress-label {
+    font-size: 0.85rem;
+    color: #6b7280;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .scene { perspective: 1200px; width: 100%; max-width: 560px; height: 320px; }
+  .card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 12px;
+    outline: none;
+  }
+  .card.flipped { transform: rotateY(180deg); }
+  .card.no-anim, .card.no-anim .face { transition: none !important; }
+  .card:focus-visible .face { box-shadow: 0 0 0 3px rgba(45,90,123,0.35), 0 2px 20px rgba(26,35,50,0.08); }
+
+  .face {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    box-shadow: 0 2px 20px rgba(26,35,50,0.08);
+    padding: 2rem 2.25rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  .front {
+    background: #ffffff;
+    border: 1px solid #d6cfc4;
+    transform: rotateY(0deg);
+  }
+  .back {
+    background: #2d5a7b;
+    color: #f0f6fa;
+    transform: rotateY(180deg);
+    visibility: hidden;
+    transition: visibility 0s 0.25s;
+  }
+  .card.flipped .back { visibility: visible; }
+  .card.flipped .front { visibility: hidden; transition: visibility 0s 0.25s; }
+
+  .label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #8a8275;
+    flex-shrink: 0;
+  }
+  .back .label { color: rgba(240,246,250,0.65); }
+  .text {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin: auto 0;
+    padding: 1rem 0;
+    white-space: pre-line;
+    overflow-wrap: break-word;
+  }
+  .hint {
+    font-size: 0.8rem;
+    color: #8a8275;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+  button {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.92rem;
+    border-radius: 8px;
+    padding: 0.65rem 1.25rem;
+    cursor: pointer;
+    transition: background 0.2s ease, opacity 0.2s ease;
+  }
+  button:focus-visible { outline: 3px solid rgba(45,90,123,0.35); outline-offset: 2px; }
+  .nav-btn {
+    background: #2d5a7b;
+    color: #ffffff;
+    border: 1px solid #2d5a7b;
+    min-width: 6.5rem;
+  }
+  .nav-btn:hover:not(:disabled) { background: #244a66; }
+  .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .shuffle-btn {
+    background: transparent;
+    color: #2d5a7b;
+    border: 1.5px dashed #2d5a7b;
+  }
+  .shuffle-btn:hover { background: rgba(45,90,123,0.06); }
+
+  .kbd-hint {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #8a8275;
+    margin-top: 1.25rem;
+  }
+  kbd {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.75rem;
+    background: #ffffff;
+    border: 1px solid #d6cfc4;
+    border-radius: 4px;
+    padding: 0.1rem 0.4rem;
+  }
+
+  @media (max-width: 480px) {
+    body { padding: 1.75rem 0.85rem 1.5rem; }
+    h1 { font-size: 1.25rem; }
+    .scene { height: 290px; }
+    .face { padding: 1.5rem 1.25rem; }
+    .text { font-size: 1rem; }
+    .kbd-hint { display: none; }
+    .nav-btn { min-width: 5.5rem; padding: 0.65rem 1rem; }
+    .shuffle-btn { padding: 0.65rem 0.9rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card, .progress-fill { transition: none; }
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <header>
+    <h1>Ecology - A.K. Ramanujan | Flashcards - L3</h1>
+    <p class="subtitle">A.K. Ramanujan · 54 Flashcards</p>
+  </header>
+
+  <div class="progress" aria-hidden="true">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <span class="progress-label" id="progressLabel">1 / 1</span>
+  </div>
+
+  <div class="scene">
+    <div class="card" id="card" role="button" tabindex="0" aria-live="polite" aria-label="Flashcard. Activate to flip.">
+      <div class="face front">
+        <div class="label">Question</div>
+        <div class="text" id="qText"></div>
+        <div class="hint">Tap to reveal answer</div>
+      </div>
+      <div class="face back">
+        <div class="label">Answer</div>
+        <div class="text" id="aText"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="nav-btn" id="prevBtn" type="button">&larr; Prev</button>
+    <button class="shuffle-btn" id="shuffleBtn" type="button">Shuffle</button>
+    <button class="nav-btn" id="nextBtn" type="button">Next &rarr;</button>
+  </div>
+
+  <div class="kbd-hint"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> to navigate &nbsp;&middot;&nbsp; <kbd>Space</kbd> to flip</div>
+</main>
+
+<script>
+const DATA = [
+[
+"In the stanza-wise cause-effect method for 'Ecology', what is the focus of Stanza 1?",
+"The statement of an effect (the poet's yearly anger)."
+],
+[
+"According to the stanza-tracing method, which stanza reveals the cause of the poet's anger?",
+"Stanza 2 (the blooming Champak trees and mother's migraine)."
+],
+[
+"What role do Stanzas 3 and 4 play in the analytical argument of 'Ecology'?",
+"They provide supporting evidence (the pollen fog reaching the house)."
+],
+[
+"In the five-part argument structure for 'Ecology', what does Stanza 5 represent?",
+"The family's response to the situation."
+],
+[
+"What is the final component provided in Stanza 6 of 'Ecology' to complete the argument?",
+"The mother's justification for her refusal to cut the tree."
+],
+[
+"The five-part method for organizing an exam-ready argument consists of: effect, cause, evidence, response, and _____.",
+"Justification"
+],
+[
+"In the Jasmine Vine scenario, what serves as the 'Effect stated first'?",
+"The children's disturbed sleep."
+],
+[
+"In the Jasmine Vine scenario, what is identified as the 'Cause'?",
+"The scent of the night-blooming jasmine vine."
+],
+[
+"In the Jasmine Vine scenario, what serves as the 'Supporting evidence'?",
+"The scent reaching every room of the house."
+],
+[
+"In the Jasmine Vine scenario, why does the grandmother refuse to remove the plant?",
+"The memory of her late husband who planted it."
+],
+[
+"What is Step 1 of the two-step imagery analysis method?",
+"Identify the surface sense (sight, smell, touch, etc.)."
+],
+[
+"What is Step 2 of the two-step imagery analysis method?",
+"Infer what the image reveals about character or relationships."
+],
+[
+"Applying Step 1 to the image 'the afternoon sun lay thick as honey', which senses are engaged?",
+"Sight and touch."
+],
+[
+"Applying Step 2 to the image 'thick as honey', what does the image suggest?",
+"Warmth, slowness, and comfort."
+],
+[
+"In the poem 'Ecology', what surface sense is identified in the image 'twisted silver'?",
+"Sight (the sheen and shape of metal)."
+],
+[
+"What deeper meaning is inferred from the 'twisted silver' image in 'Ecology'?",
+"Sharp anger and inherited family history."
+],
+[
+"How do the images 'bone-creaks' and 'the old gate groaned' both use personification?",
+"They describe ordinary sounds as if they were alive and aware."
+],
+[
+"Name the three reasoning factors the mother uses to justify keeping the Champak tree.",
+"Origin/history, ongoing family role, and emotional value vs. practical cost."
+],
+[
+"What is the origin/history of the Champak tree in Ramanujan's poem?",
+"It grew from a bird's dropped seed and is almost as old as the mother."
+],
+[
+"What ongoing role does the Champak tree play in the family's religious life?",
+"It provides flowers for worship."
+],
+[
+"In the mother's reasoning, what practical discomfort is outweighed by the tree's tradition?",
+"Severe migraines."
+],
+[
+"In the sewing machine scenario, what constitutes the 'Origin / history' factor?",
+"It was the only possession the grandmother brought during migration."
+],
+[
+"In the sewing machine scenario, what is the 'Ongoing family role' of the object?",
+"A symbol of resilience retold in family stories."
+],
+[
+"In the sewing machine scenario, what is the 'discomfort' that conflicts with its sentimental value?",
+"It is heavy, takes up space, and barely works."
+],
+[
+"What are the three themes in the framework used to analyze 'Ecology'?",
+"Ecology, family memory, and nature-versus-human conflict."
+],
+[
+"How is the 'Ecology' theme defined in the context of the family household?",
+"Nature is viewed as an active part of daily life, not just background."
+],
+[
+"What does the 'Family memory' theme explain in the analysis of the Champak tree?",
+"Why the tree is kept despite the pain it causes (it is tied to history)."
+],
+[
+"What specific trade-off is captured by the 'Nature vs. human conflict' theme in 'Ecology'?",
+"The trade-off between the tree's flowers/tradition and the mother's migraines."
+],
+[
+"In the Bee Hive scenario, how is the 'Ecology' theme applied?",
+"The bees are an active part of daily household life."
+],
+[
+"In the Bee Hive scenario, what historical detail supports the 'Family memory' theme?",
+"The hive has been tied to three generations of the family."
+],
+[
+"In the Bee Hive scenario, what represents the 'Nature vs. human conflict'?",
+"The risk of a grandchild's allergy versus the value of tradition and honey."
+],
+[
+"What is the shared thematic summary for both the Champak tree and the bee-hive scenarios?",
+"Living with nature means accepting some risk along with its rewards."
+],
+[
+"The phrase 'pollen fog' in 'Ecology' is categorized as _____ in a cause-effect argument.",
+"Supporting evidence"
+],
+[
+"Concept: Two-step Imagery Method",
+"Definition: A technique involving identifying surface senses followed by inferring deeper character or relationship meanings."
+],
+[
+"In 'Ecology', which stanza addresses the mother's refusal to cut the tree?",
+"Stanza 5"
+],
+[
+"Why is the jasmine vine scenario used in the study of 'Ecology'?",
+"To show that the stanza-tracing method generalizes to other family narratives."
+],
+[
+"In the context of 'Ecology', the term 'Silver Temper' primarily uses the sense of _____.",
+"Sight"
+],
+[
+"Which reasoning factor is applied when noting the Champak tree provides flowers for the family's women?",
+"Ongoing family role"
+],
+[
+"In the thematic framework, the idea that a tree is 'almost as old as the mother' fits into _____.",
+"Family memory"
+],
+[
+"The method of tracing effect $\\rightarrow$ cause $\\rightarrow$ evidence $\\rightarrow$ response $\\rightarrow$ justification is designed for what specific goal?",
+"Creating an organized, exam-ready argument."
+],
+[
+"What does the analysis of 'nightly visiting voices' suggest about the speaker's perception of the house?",
+"It suggests the house or its sounds are alive and aware."
+],
+[
+"True or False: The stanza-wise method requires stating the cause before the effect.",
+"False (The effect is stated first in Stanza 1)."
+],
+[
+"In the three-part reasoning for cultural attachment, 'emotional cost' is weighed against _____.",
+"Practical benefit (or cost of removal)."
+],
+[
+"Which theme identifies the unresolved trade-off between the honey's value and the grandchild's allergy?",
+"Nature-versus-human conflict"
+],
+[
+"In 'Ecology', the 'pollen fog' reaches the house in which stanzas?",
+"Stanzas 3 and 4"
+],
+[
+"The 'two-step imagery method' aims to move a student from surface identification to _____.",
+"Analytical skill"
+],
+[
+"Under the 'Ecology' theme, nature is described as an _____ part of daily life.",
+"Active"
+],
+[
+"In the 'Ecology' poem, who specifically uses the flowers from the Champak tree?",
+"The family's women (for worship)."
+],
+[
+"The phrase 'the old gate groaned' is an example of applying literary analysis to _____ imagery.",
+"Auditory (Sound)"
+],
+[
+"The five-part answer structure for 'Ecology' can be written in under _____ words while covering every stanza.",
+"Sixty"
+],
+[
+"Which specific step in the cause-effect method explains the 'why' behind the response?",
+"Justification"
+],
+[
+"In the sewing machine hypothetical, what represents the 'ongoing role'?",
+"Stories of resilience retold in the family."
+],
+[
+"The comparison of 'twisted silver' and 'bone-creaks' demonstrates that different images can suggest the same _____.",
+"Deeper meaning (or analytical inference)."
+],
+[
+"In the thematic framework, what connects the Champak tree and the bee hive?",
+"Both involve a conflict between nature's benefit and human discomfort/risk."
+]
+];
+
+(function () {
+  let order = DATA.map((_, i) => i);
+  let idx = 0;
+
+  const card = document.getElementById('card');
+  const qText = document.getElementById('qText');
+  const aText = document.getElementById('aText');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const shuffleBtn = document.getElementById('shuffleBtn');
+  const fill = document.getElementById('progressFill');
+  const label = document.getElementById('progressLabel');
+  const faces = card.querySelectorAll('.face');
+
+  function render() {
+    // Reset to the question side instantly so the next answer is never revealed mid-flip
+    card.classList.add('no-anim');
+    card.classList.remove('flipped');
+    const pair = DATA[order[idx]];
+    qText.textContent = pair[0];
+    aText.textContent = pair[1];
+    faces.forEach(f => { f.scrollTop = 0; });
+    void card.offsetWidth;
+    card.classList.remove('no-anim');
+
+    const total = DATA.length;
+    label.textContent = (idx + 1) + ' / ' + total;
+    fill.style.width = ((idx + 1) / total * 100) + '%';
+    prevBtn.disabled = idx === 0;
+    nextBtn.disabled = idx === total - 1;
+  }
+
+  function flip() { card.classList.toggle('flipped'); }
+  function prev() { if (idx > 0) { idx--; render(); } }
+  function next() { if (idx < DATA.length - 1) { idx++; render(); } }
+  function shuffle() {
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    idx = 0;
+    render();
+  }
+
+  card.addEventListener('click', flip);
+  prevBtn.addEventListener('click', function () { prev(); this.blur(); });
+  nextBtn.addEventListener('click', function () { next(); this.blur(); });
+  shuffleBtn.addEventListener('click', function () { shuffle(); this.blur(); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
+    else if (e.key === ' ' || e.code === 'Space') { e.preventDefault(); flip(); }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

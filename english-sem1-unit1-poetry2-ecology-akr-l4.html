@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ecology - A.K. Ramanujan | Flashcards - L4</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: #f6f3ee;
+    color: #1a2332;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2.5rem 1rem 2rem;
+  }
+  .app { width: 100%; max-width: 560px; }
+  header { text-align: center; margin-bottom: 1.75rem; }
+  h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: normal;
+    font-size: 1.45rem;
+    line-height: 1.3;
+    color: #1a2332;
+    margin: 0 0 0.4rem;
+  }
+  .subtitle { font-size: 0.9rem; color: #6b7280; margin: 0; }
+
+  .progress { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+  .progress-track {
+    flex: 1;
+    height: 4px;
+    background: #e4ddd2;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0;
+    background: #2d5a7b;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+  .progress-label {
+    font-size: 0.85rem;
+    color: #6b7280;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .scene { perspective: 1200px; width: 100%; max-width: 560px; height: 320px; }
+  .card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 12px;
+    outline: none;
+  }
+  .card.flipped { transform: rotateY(180deg); }
+  .card.no-anim, .card.no-anim .face { transition: none !important; }
+  .card:focus-visible .face { box-shadow: 0 0 0 3px rgba(45,90,123,0.35), 0 2px 20px rgba(26,35,50,0.08); }
+
+  .face {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    box-shadow: 0 2px 20px rgba(26,35,50,0.08);
+    padding: 2rem 2.25rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  .front {
+    background: #ffffff;
+    border: 1px solid #d6cfc4;
+    transform: rotateY(0deg);
+  }
+  .back {
+    background: #2d5a7b;
+    color: #f0f6fa;
+    transform: rotateY(180deg);
+    visibility: hidden;
+    transition: visibility 0s 0.25s;
+  }
+  .card.flipped .back { visibility: visible; }
+  .card.flipped .front { visibility: hidden; transition: visibility 0s 0.25s; }
+
+  .label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #8a8275;
+    flex-shrink: 0;
+  }
+  .back .label { color: rgba(240,246,250,0.65); }
+  .text {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin: auto 0;
+    padding: 1rem 0;
+    white-space: pre-line;
+    overflow-wrap: break-word;
+  }
+  .hint {
+    font-size: 0.8rem;
+    color: #8a8275;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+  button {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.92rem;
+    border-radius: 8px;
+    padding: 0.65rem 1.25rem;
+    cursor: pointer;
+    transition: background 0.2s ease, opacity 0.2s ease;
+  }
+  button:focus-visible { outline: 3px solid rgba(45,90,123,0.35); outline-offset: 2px; }
+  .nav-btn {
+    background: #2d5a7b;
+    color: #ffffff;
+    border: 1px solid #2d5a7b;
+    min-width: 6.5rem;
+  }
+  .nav-btn:hover:not(:disabled) { background: #244a66; }
+  .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .shuffle-btn {
+    background: transparent;
+    color: #2d5a7b;
+    border: 1.5px dashed #2d5a7b;
+  }
+  .shuffle-btn:hover { background: rgba(45,90,123,0.06); }
+
+  .kbd-hint {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #8a8275;
+    margin-top: 1.25rem;
+  }
+  kbd {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.75rem;
+    background: #ffffff;
+    border: 1px solid #d6cfc4;
+    border-radius: 4px;
+    padding: 0.1rem 0.4rem;
+  }
+
+  @media (max-width: 480px) {
+    body { padding: 1.75rem 0.85rem 1.5rem; }
+    h1 { font-size: 1.25rem; }
+    .scene { height: 290px; }
+    .face { padding: 1.5rem 1.25rem; }
+    .text { font-size: 1rem; }
+    .kbd-hint { display: none; }
+    .nav-btn { min-width: 5.5rem; padding: 0.65rem 1rem; }
+    .shuffle-btn { padding: 0.65rem 0.9rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card, .progress-fill { transition: none; }
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <header>
+    <h1>Ecology - A.K. Ramanujan | Flashcards - L4</h1>
+    <p class="subtitle">A.K. Ramanujan · 55 Flashcards</p>
+  </header>
+
+  <div class="progress" aria-hidden="true">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <span class="progress-label" id="progressLabel">1 / 1</span>
+  </div>
+
+  <div class="scene">
+    <div class="card" id="card" role="button" tabindex="0" aria-live="polite" aria-label="Flashcard. Activate to flip.">
+      <div class="face front">
+        <div class="label">Question</div>
+        <div class="text" id="qText"></div>
+        <div class="hint">Tap to reveal answer</div>
+      </div>
+      <div class="face back">
+        <div class="label">Answer</div>
+        <div class="text" id="aText"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="nav-btn" id="prevBtn" type="button">&larr; Prev</button>
+    <button class="shuffle-btn" id="shuffleBtn" type="button">Shuffle</button>
+    <button class="nav-btn" id="nextBtn" type="button">Next &rarr;</button>
+  </div>
+
+  <div class="kbd-hint"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> to navigate &nbsp;&middot;&nbsp; <kbd>Space</kbd> to flip</div>
+</main>
+
+<script>
+const DATA = [
+[
+"In the structural analysis of 'Ecology', into which four categories is the poem's imagery divided?",
+"The imagery is categorized into olfactory, visual, tactile, and personification."
+],
+[
+"How does the poem's imagery move structurally from the beginning of the plot to the end?",
+"The imagery moves from the external world to the house and finally to the individual."
+],
+[
+"What specific olfactory/visual image establishes the external, natural cause in the poem?",
+"The 'yellow pollen fog of a fragrance' serves as the established external cause."
+],
+[
+"The _____ imagery, such as 'no wind could sift', demonstrates the physical cost and inescapability of the tree's presence.",
+"tactile"
+],
+[
+"What is the structural function of personifying the house as having 'ears and eyes'?",
+"It bridges the external imagery of the tree with the internal, human reactions of the family."
+],
+[
+"Which visual simile delivers the final, personal consequence of the natural cause within the poem?",
+"The mother's temper is described as 'flashing... like twisted silver'."
+],
+[
+"How does the nature of the tree's imagery contrast with that of the mother's imagery?",
+"The tree's imagery is diffuse and uncontrollable, while the mother's imagery is sharp and specific."
+],
+[
+"The contrast between diffuse natural imagery and sharp personal imagery mirrors the argument that natural effects are broad while human responses are _____.",
+"precise and personal"
+],
+[
+"Why is the mother's 'silver temper' considered an individually inherited response despite the shared natural cause?",
+"It is described as being passed down specifically from her own mother rather than being a generic reaction."
+],
+[
+"In the imagery cause-effect chain, what is the immediate consequence of the visual/olfactory blooming flowers?",
+"The blooming flowers cause the pervasive tactile image of the 'pollen fog'."
+],
+[
+"Concept: Personification of the house",
+"Definition: Attributing human traits like 'ears and eyes' to walls to show they absorb sensations like the family does."
+],
+[
+"What are the three distinct kinds of reasoning behind the mother's refusal to cut the tree?",
+"Her refusal is based on historical/originary, cultural/religious, and emotional reasoning."
+],
+[
+"Analyze the historical/originary reasoning the mother provides for keeping the tree.",
+"The tree grew by chance from a bird's dropping and is almost as old as the mother herself."
+],
+[
+"How does the tree's chance origin affect the mother's decision-making process?",
+"It creates a personal, biography-linked bond that makes the tree significant to her life story."
+],
+[
+"What is the cultural/religious function assigned to the tree's flowers?",
+"The flowers are used for worship of the gods and shared with the women of the family."
+],
+[
+"How does the religious function of the tree influence the mother's perception of her migraines?",
+"She accepts the physical cost of migraines as a fair exchange for the tree's communal and sacred value."
+],
+[
+"Contrast the speaker's emotional response to the tree's blossoming with the mother's response.",
+"The speaker feels a residual 'rage', while the mother maintains a calm acceptance based on cultural meaning."
+],
+[
+"What does the generational contrast between the speaker and the mother suggest about cultural inheritance?",
+"It suggests that the acceptance of cultural costs is not automatic and must be actively passed down through explanation."
+],
+[
+"In the causal chain of the mother's refusal, what does the emotional bond tied to her life story lead her to do?",
+"It leads her to assign the tree a religious and cultural function."
+],
+[
+"The mother's 'twisted silver' anger is an example of _____ reasoning that channels frustration into memory rather than action.",
+"emotional"
+],
+[
+"Which stanza is cited as the moment the mother explains her reasoning to the younger generation?",
+"The mother's calm explanation occurs in stanza six."
+],
+[
+"According to the L4 analysis, what is the foundational cause in the poem's thematic structure?",
+"The ecology theme, featuring the tree as an active presence, is the foundational cause."
+],
+[
+"Why does the 'ecology' theme lead directly to the 'family memory' theme?",
+"The tree's age and personal significance link it to the mother's life and earlier generations."
+],
+[
+"In the thematic causal relationship, what theme acts as the middle effect and cause?",
+"Family memory acts as the middle link between ecology and human conflict."
+],
+[
+"How does 'family memory' cause the 'nature-versus-human conflict' theme?",
+"The value derived from memory outweighs the physical cost, forcing the family to manage an unresolved tension."
+],
+[
+"What is the final effect in the poem's thematic structural progression?",
+"The final effect is the nature-versus-human conflict, represented by ongoing tension."
+],
+[
+"How does 'Ecology' differ from conventional nature poems regarding the treatment of the natural world?",
+"It neither idealizes the tree as purely benevolent nor treats it as a problem to be solved."
+],
+[
+"What structural choice at the end of 'Ecology' provides evidence that its argument is about coexistence?",
+"The poem ends by naming an unresolved conflict, the 'migraines', rather than providing a resolution."
+],
+[
+"In Table 5, the 'middle effect' is defined as the tree's value being tied to the _____.",
+"mother's own life"
+],
+[
+"Unlike a poem that ends with a tree being cut down, 'Ecology' ends on a 'dower of _____ in season'.",
+"migraines"
+],
+[
+"What is the 'structural function' of the tactile image 'cold pack on her head'?",
+"It demonstrates the physical cost and the inescapable sensation caused by the tree."
+],
+[
+"The mother's anger is channeled into _____ memory rather than into removing the tree.",
+"inherited"
+],
+[
+"How does the 'personified house' reflect the family's experience of the tree?",
+"The house is described as 'porous like us', indicating it absorbs the tree's effects just as the family does."
+],
+[
+"Why is the ending of the poem considered 'structurally telling'?",
+"It concludes on a negative physical consequence, emphasizing that the conflict remains unresolved."
+],
+[
+"What term describes the tree's effect of giving migraines across generations?",
+"The poem describes the migraines as 'indiscriminate' in their effect."
+],
+[
+"How does the poem's structure map its plot through imagery alone?",
+"It moves through a cause-effect chain from external flowers to internal human temper."
+],
+[
+"What is the significance of the tree being 'grown from a bird's droppings'?",
+"It establishes the tree's chance origin, which the mother uses as a historical reason for its preservation."
+],
+[
+"How does the mother's reasoning transform a physical problem (migraines) into an accepted condition?",
+"By assigning the tree religious and cultural functions, the migraines are redefined as a necessary exchange for those benefits."
+],
+[
+"The poem's speaker coming home 'in a rage' suggests that cultural meaning is not _____ across generations.",
+"automatically assumed"
+],
+[
+"In the theme of 'Ecology', the tree is viewed as an _____ in family life.",
+"active presence"
+],
+[
+"What does the contrast between 'rage' and 'calm explanation' illustrate?",
+"It illustrates two different effects produced by the same natural cause across two generations."
+],
+[
+"Why is 'Nature vs. Human Conflict' identified as the 'Final effect' in the thematic analysis?",
+"Because the previous themes of ecology and memory make the conflict unavoidable and permanent."
+],
+[
+"The imagery of 'yellow' flowers and 'pollen fog' belongs primarily to which two sensory categories?",
+"These images belong to the olfactory and visual categories."
+],
+[
+"What specific phrase indicates that the tree's presence is pervasive and cannot be filtered out?",
+"The phrase 'no wind could sift' indicates the fragrance's inescapability."
+],
+[
+"How does the mother's reasoning process start in the cause-effect chain?",
+"It starts with the tree's chance origin which then creates an emotional bond."
+],
+[
+"Why is the mother's response described as 'precise' compared to the tree's effects?",
+"Her response is a specific, inherited silver temper rather than the broad, indiscriminate fragrance of the tree."
+],
+[
+"Which reasoning type assigns an 'ongoing communal function' to the tree?",
+"Cultural or religious reasoning assigns this function."
+],
+[
+"The poem's position on nature is best described as one of _____ rather than victory for either side.",
+"coexistence"
+],
+[
+"The simile of 'twisted silver' refers to the mother's _____.",
+"temper"
+],
+[
+"What is the structural function of visual/olfactory imagery in the poem's beginning?",
+"It establishes the external, natural cause of the poem's central conflict."
+],
+[
+"Concept: Thematic Dependency",
+"Definition: The structural reliance of themes where one (Ecology) causes the next (Memory), leading to the final (Conflict)."
+],
+[
+"How does the mother's historical reasoning connect the tree to her biography?",
+"She considers the tree 'almost as old as she', linking its lifespan directly to her own."
+],
+[
+"What is the result of the 'middle effect' (family memory) in the thematic chain?",
+"It ensures that the tree's value outweighs its cost, preventing its removal."
+],
+[
+"In the L4 analysis, imagery categories are described not as separate decorations but as a single _____.",
+"cause-effect chain"
+],
+[
+"Which word at the poem's end signals a lack of resolution?",
+"The word 'migraines' signals that the conflict remains ongoing."
+]
+];
+
+(function () {
+  let order = DATA.map((_, i) => i);
+  let idx = 0;
+
+  const card = document.getElementById('card');
+  const qText = document.getElementById('qText');
+  const aText = document.getElementById('aText');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const shuffleBtn = document.getElementById('shuffleBtn');
+  const fill = document.getElementById('progressFill');
+  const label = document.getElementById('progressLabel');
+  const faces = card.querySelectorAll('.face');
+
+  function render() {
+    // Reset to the question side instantly so the next answer is never revealed mid-flip
+    card.classList.add('no-anim');
+    card.classList.remove('flipped');
+    const pair = DATA[order[idx]];
+    qText.textContent = pair[0];
+    aText.textContent = pair[1];
+    faces.forEach(f => { f.scrollTop = 0; });
+    void card.offsetWidth;
+    card.classList.remove('no-anim');
+
+    const total = DATA.length;
+    label.textContent = (idx + 1) + ' / ' + total;
+    fill.style.width = ((idx + 1) / total * 100) + '%';
+    prevBtn.disabled = idx === 0;
+    nextBtn.disabled = idx === total - 1;
+  }
+
+  function flip() { card.classList.toggle('flipped'); }
+  function prev() { if (idx > 0) { idx--; render(); } }
+  function next() { if (idx < DATA.length - 1) { idx++; render(); } }
+  function shuffle() {
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    idx = 0;
+    render();
+  }
+
+  card.addEventListener('click', flip);
+  prevBtn.addEventListener('click', function () { prev(); this.blur(); });
+  nextBtn.addEventListener('click', function () { next(); this.blur(); });
+  shuffleBtn.addEventListener('click', function () { shuffle(); this.blur(); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
+    else if (e.key === ' ' || e.code === 'Space') { e.preventDefault(); flip(); }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
